@@ -1,0 +1,327 @@
+
+
+/* BANNER */
+.banner {
+  min-height: 300px;
+  /* background: black; */
+ }
+
+.banner img {
+  width: 100%
+}
+
+/* .search .ant-input-search {
+  height: 60px !important;
+  padding-right: 11px;
+  background: white;
+  border-radius: 4px;
+}
+
+.search .ant-input-wrapper,
+.search .ant-input-lg {
+  height: 60px !important;
+}
+
+.search button.ant-btn.ant-input-search-button.ant-btn-primary.ant-btn-lg {
+  border-radius: 5px;
+  width: 90px;
+  background: #E12828;
+  border-color:  #E12828;
+} */
+
+.banner__overlay {
+  /* background: Linear-Gradient(to right, rgba(0, 0, 0, 0.48), rgba(0, 0, 0, 0.34)); */
+  background: Linear-Gradient(to right,rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.41));
+  height: 99%;
+  width: 100%;
+  position: absolute;
+}
+
+.banner__content {
+  /* width: 40%; */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.banner__content input {
+  border: 0px !important;
+}
+
+.banner__main-text {
+  /* margin: 20px 0px; */
+  font-size: 2.57rem;
+  /* font-size: 36px; */
+  line-height: 3.36rem;
+  /* line-height: 47px; */
+}
+
+.banner__sub-text {
+  margin-bottom: 20px;
+  font-size: 18px;
+  line-height: 30px;
+  font-weight: 400;
+}
+
+/* BANNER END */
+
+
+/* PARTNERS */
+.partners {
+  padding: 50px 0px 90px 0px;
+}
+
+.partners .partners__main-text {
+  font-size: 16px;
+  margin-bottom: 30px;
+  font-weight: 400;
+}
+
+/* .partners row {
+
+} */
+/* PARTNERS END */
+
+
+/* FEATURES */
+
+.features {
+  margin-bottom: 40px
+}
+
+.features .features__main-text {
+  font-size: 32px
+}
+
+.features .card {
+  border: none;
+  border-radius: 0px;
+  box-shadow: 0px 0px 25px rgba(30, 34, 37, 0.03);
+}
+
+.features .card-text {
+  font-size: 14px;
+  line-height: 30px;
+  color: #505565;
+  padding-right: 1%;
+}
+
+.features .card-title {
+  font-size: 18px;
+}
+
+.features .card-img {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+/* FEATURES END */
+
+
+/* ZERO TO HERO */
+
+.zero-to-hero-courses {
+  background: #FAFAFA;
+  min-height: 650px;
+}
+
+.courses__main-text {
+  /* font-size: 2rem; */
+  font-size: 32px;
+  line-height: 42px;
+}
+
+.courses .card {
+  box-shadow: 0px -3px 6px rgba(35, 39, 53, 0.03), 0px 3px 6px rgba(35, 39, 53, 0.03);
+  border-radius: 4px;
+}
+
+.courses__sub-text {
+  line-height: 30px;
+}
+
+.courses .card-img-top {
+  height: 160px;
+}
+
+.courses .card-title {
+  font-size: 18px;
+}
+
+/* ZERO-TO-HERO END */
+
+/* INSTRUCTORS */
+
+.instructors {
+  background: #FAFAFA;
+  min-height: 650px;
+  padding-top: 50px;
+}
+
+.instructors .instructors__main-text {
+  font-size: 32px;
+}
+
+.instructors .instructors__sub-text {
+  font-size: 16px;
+  line-height: 30px;
+}
+
+.instructor img {
+  height: 100px;
+  width: 100px;
+  margin: 0px auto;
+}
+
+.instructor .social-links img {
+  height: 18px;
+  width: 18px;
+}
+
+.instructor .instructor__fullname {
+  color: #E12828;
+  font-weight: 500;
+  font-size: 18px;
+  /* margin-bottom: 0px; */
+}
+
+.instructor .instructor__title {
+  font-size: 14px;
+  line-height: 30px;
+}
+
+.instructor p {
+  font-size: 14px;
+  line-height: 24px;
+  color: #505565;
+}
+
+/* INSTRUCTORS END */
+
+
+
+/* TESTIMONIAL  */
+
+.testimonial .card {
+background: #FAFAFA;
+}
+
+.testimonial .testimonial__text {
+font-weight: normal;
+font-size: 14px;
+line-height: 30px;
+}
+
+/* TESTIMONIAL END */
+
+
+/* BLOG */
+
+.blog .card {
+  box-shadow: 0px 3px 25px rgba(35, 39, 53, 0.02);
+}
+
+.blog-image__container {
+  /* max-height: 200px;
+  overflow: hidden; */
+}
+
+/* BLOG END */
+
+/* NEWSLETTER */
+
+.newsletter {
+  height: 280px;
+}
+
+.newsletter  h4 {
+  line-height: 42px;
+}
+
+.newsletter  p {
+  line-height: 30px;
+}
+
+
+/* NEWSLETTER END */
+
+
+/* RESOURCES */
+.resources {
+font-size: 13px;
+}
+
+.resources p {
+line-height: 30px;
+}
+
+.resources img {
+height: 38px;
+width: 38px;
+margin: 0px auto;
+}
+
+.resources .card {
+box-shadow: 0px 3px 25px rgba(35, 39, 53, 0.05);
+}
+
+.resources .card-title {
+font-weight: 500;
+font-size: 18px;
+line-height: 30px;
+text-align: center;
+}
+
+.resources div.card.practice-questions {
+border-top: 5px solid #E12828 !important;
+border-radius: 4px 4px 0px 0px;
+}
+
+.resources div.card.interview-questions {
+border-top: 5px solid #000 !important;
+border-radius: 4px 4px 0px 0px;
+}
+
+/* RESOURCES END */
+
+
+@media (min-width: 1600px) {
+  .banner img {
+    margin-top: -100px;
+  }
+}
+
+
+@media (min-width: 576px) {
+  .partners .col-md-2 {
+    flex: 0 0 11.666667% !important;
+      /* max-width: 16.666667%; */
+  }
+}
+
+
+
+@media (max-width: 576px) {
+
+  .banner {
+    background: black;
+  }
+
+  .banner__sub-text {
+    font-size: 1.75rem;
+    line-height: 2.63rem;
+    margin: 0px 0px 30px 0px;
+  }
+
+  .banner__main-text {
+    font-size: 2.88rem;
+    line-height: 4.38rem;
+    margin: 10px 0px;
+  }
+
+  .banner__content {
+    height: 300px;
+  }
+
+}

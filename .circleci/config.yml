@@ -1,0 +1,45 @@
+version: 2
+jobs:
+  build-test:
+    docker:
+      - image: circleci/php:7.1
+    working_directory: ~/tretenBE
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "composer.json" }}
+            - v1-dependencies-
+      - run: composer install
+      - save_cache:
+          paths:
+            - vendor
+          key: v1-dependencies-{{ checksum "composer.json" }}
+
+  deploy-to-staging:
+    docker:
+      - image: circleci/php:7.1
+    working_directory: ~/tretenBE
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "composer.json" }}
+      - run:
+          name: Deploy to heroku
+          environment:
+            HEROKU_API_KEY: 194d0430-242a-49d0-bc7d-8f0da38841ae
+            HEROKU_APP_NAME: treten-ng-backend
+          command: git push https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git staging:master -f
+workflows:
+  version: 2
+  deploy-build:
+    jobs:
+      - build-test
+      - deploy-to-staging:
+          requires:
+            - build-test
+          filters:
+            branches:
+              only: staging
+

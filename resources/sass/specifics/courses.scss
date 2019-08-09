@@ -1,0 +1,37 @@
+/* COURSES */
+#treten .courses .ant-tabs-tab-active.ant-tabs-tab {
+  background: white;
+}
+
+.courses .ant-tabs-ink-bar {
+  background-color: #E12828
+}
+ .courses {
+    position: relative
+  }
+
+ .courses hr {
+    position: absolute;
+    width: 100%;
+    top: 51px;
+  }
+
+  .course-about {
+    font-size: 16px;
+    line-height: 30px;
+  }
+
+
+  .course-about__container {
+    border: 1px solid #F0F1F3;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+
+  .how-it-works, .course-instructor {
+    border: 1px solid #F0F1F3;
+    box-sizing: border-box;
+    border-radius: 4px;
+  }
+
+/* COURSES END */

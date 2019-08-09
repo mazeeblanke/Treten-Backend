@@ -1,0 +1,80 @@
+
+/* NAVBAR STYlES */
+.ant-layout-header {
+  height: 5rem;
+  padding: 0 50px;
+  line-height: 5rem;
+  background: white;
+  box-shadow: 0px 0px 25px rgba(30, 34, 37, 0.15);
+}
+
+.header__left {
+  width: 100%;
+  float: left;
+}
+
+.header ul.header__right {
+  line-height: 80px;
+}
+
+.header svg {
+  font-size: 12px;
+  margin-left: 10px;
+}
+
+.brand {
+  margin-right: 5rem;
+  min-width: 180px;
+}
+
+.brand__text {
+  font-size: 20px;
+  margin: 0px !important;
+  line-height: 25px;
+}
+
+.brand__logo {
+  height: 22px;
+  margin-right: .5rem;
+  margin-top: 2px;
+}
+
+
+
+.navbar {
+  box-shadow: 0px 0px 25px rgba(30, 34, 37, 0.15);
+  min-height: 80px;
+}
+
+.navbar i {
+  font-size: 12px;
+  margin-left: 5px;
+  margin-top: 2px;
+}
+
+.navbar li a {
+  display: flex;
+  align-items: center;
+  margin: 0px 4px;
+}
+
+.navbar-brand {
+  margin-right: 4rem !important;
+}
+
+.nav-item {
+  display: flex;
+  margin: 6px 0px;
+}
+
+.nav-item a {
+  font-size: 14px;
+}
+
+/* end nav */
+
+@media (max-width: 992px) {
+  nav .mr-auto.nav {
+    display: none;
+  }
+}

@@ -1,0 +1,160 @@
+/* AUTH PAGE */
+
+  #treten {
+    .auth .ant-tabs {
+        box-shadow: 0px 3px 25px rgba(35, 39, 53, 0.02);
+      }
+
+      .auth .ant-tabs-card > .ant-tabs-content {
+        height: 120px;
+        margin-top: -16px;
+      }
+
+      .auth .ant-tabs-card > .ant-tabs-content > .ant-tabs-tabpane {
+        background: #fff;
+        padding: 16px;
+      }
+
+      .auth .auth__note{
+        font-size: 12px;
+        line-height: 24px;
+        text-align: center;
+        margin-top: -14px;
+        color: #505565;
+      }
+
+      .auth .ant-tabs-card > .ant-tabs-bar {
+        border-color: #fff;
+      }
+
+      .auth .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab {
+        border-color: transparent;
+        background: transparent;
+      }
+
+      .auth .ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+        border-color: #fff;
+        background: #fff;
+      }
+
+      .auth .ant-tabs-card > .ant-tabs-content {
+        min-height: 300px;
+        height: unset;
+        background: white;
+      }
+
+      .auth .ant-tabs-tab {
+        font-size: 18px;
+      }
+
+      .auth label {
+        font-size: 14px;
+        line-height: 21px;
+        /* identical to box height, or 150% */
+        color: #232735;
+        font-weight: 500;
+        width: 100%;
+      }
+
+      .auth label span {
+        float: right;
+        font-weight: 400;
+        color:  #8B90A0;
+      }
+
+      .become-an-instructor .auth__wrapper {
+        box-shadow: 0px -3px 6px rgba(35, 39, 53, 0.03), 0px 3px 6px rgba(35, 39, 53, 0.03);
+        border-radius: 4px;
+      }
+
+      .auth .divider::after {
+        content: '';
+        border: 0.6px solid #FAFAFA;
+        display: flex;
+        margin-left: 32px;
+        margin-top: -10px;
+      }
+
+      .auth__btn {
+        background: #E12828;
+        border-color: #E12828;
+        border-radius: 4px;
+        height: 42px;
+        width: 100%;
+      }
+
+      .auth .ant-tabs-nav {
+        height: 80px;
+        width: 99%;
+      }
+
+      .auth .ant-tabs-tab {
+        width: 50%;
+        height: 80px;
+        text-align: center;
+        padding-top: 20px;
+        color: #8B90A0;
+        background: #fff;
+        font-size: 20px;
+        border: none !important;
+      }
+
+      .auth .resetpassword .ant-tabs-tab {
+        width: 100%;
+      }
+
+      .auth__container {
+        // height: 800px;
+        min-height: 800px;
+      }
+
+      .auth__container .confirmation {
+        height: 100%;
+      }
+
+      .auth__container .confirmation img {
+        height: 30px;
+        width: 30px;
+      }
+
+
+      .ant-tabs-tab-active.ant-tabs-tab {
+        color: #333333 ;
+        background: #FAFAFA;
+        border-color: #FAFAFA;
+      }
+
+      .auth .auth__wrapper {
+        padding: 0rem 1.8rem!important;
+      }
+
+      .auth .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-container {
+        height: 80px;
+      }
+
+      .auth input {
+        border: 1px solid #F0F1F3 !important;
+        box-sizing: border-box;
+        border-radius: 4px !important;
+        height: 42px !important;
+        // color: #D3D4D8;
+        width: 100% !important;
+      }
+
+
+      .register__main-text {
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 30px;
+      }
+
+      .register__sub-text {
+        font-size: 14px;
+        line-height: 24px;
+      }
+
+
+}
+
+
+/* AUTH PAGE END */

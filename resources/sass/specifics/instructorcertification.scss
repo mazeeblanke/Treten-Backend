@@ -1,0 +1,17 @@
+
+/* INSTRUCTORS-CERTIFICATIONS */
+.instructor-certifications,
+.instructor-experience,
+.instructor-education,
+.instructor-course {
+  height: 350px !important;
+  overflow-y: scroll
+}
+
+.instructor-certifications::-webkit-scrollbar,
+.instructor-education::-webkit-scrollbar,
+.instructor-course::-webkit-scrollbar,
+.instructor-experience::-webkit-scrollbar {
+  display: none !important;
+}
+/* END INSTRUCTORS-CERIFICATIONS */
