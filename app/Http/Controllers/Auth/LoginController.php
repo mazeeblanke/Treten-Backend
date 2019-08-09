@@ -39,11 +39,7 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        dd('sdsd');
-        // if (auth()->user()) {
-        //     dd('jkj');
-        //     return response()->back();
-        // }
+        // dd('sdsd');
         return view('auth.index');
     }
 }
