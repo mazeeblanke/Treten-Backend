@@ -2,6 +2,7 @@
 
 @section('content')
 
-<div id="auth"></div>
+<!-- <div id="auth"></div> -->
+{{ dd('sdsd')}}
 
 @endsection

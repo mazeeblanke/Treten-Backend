@@ -39,7 +39,7 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        dd('sdsd');
+        // dd('sdsd');
         return view('auth.index');
     }
 }
