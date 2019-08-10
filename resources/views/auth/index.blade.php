@@ -3,6 +3,6 @@
 @section('content')
 
 <!-- <div id="auth"></div> -->
-{{ dd('sdsd')}}
+{{ var_dump('sdsd')}}
 
 @endsection
