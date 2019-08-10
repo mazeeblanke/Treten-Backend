@@ -2,6 +2,6 @@
 
 @section('content')
 
-{{ var_dump('sdsd')}}
+    <div id="auth"></div>
 
 @endsection
