@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
@@ -25,7 +26,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/';
+    // protected $redirectTo = getenv('FRONTEND');
 
     /**
      * Create a new controller instance.
@@ -42,4 +43,25 @@ class LoginController extends Controller
         // dd('sdsd');
         return view('auth.index');
     }
+
+
+     /**
+     * Send the response after the user was authenticated.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function sendLoginResponse(Request $request)
+    {
+
+        $request->session()->regenerate();
+
+        $this->clearLoginAttempts($request);
+
+        return redirect()->to($request->return_url ?? getenv('FRONTEND'));
+
+        // return $this->authenticated($request, $this->guard()->user())
+        //         ?: redirect()->intended($this->redirectPath());
+    }
+
 }

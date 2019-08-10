@@ -22,7 +22,6 @@
     <link href="{{ secure_asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
-   <div id="auth"></div>
-@yield('content')
+    @yield('content')
 </body>
 </html>
