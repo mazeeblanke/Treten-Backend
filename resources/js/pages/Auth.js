@@ -146,9 +146,7 @@ Auth.propTypes = {
 
 Auth = withAuthLayout(Auth);
 
-console.log('wejwkejk 2323 2323');
 
 if (document.getElementById('auth')) {
-    console.log('wejwkejk mazino');
     ReactDOM.render(<Auth />, document.getElementById('auth'));
 }

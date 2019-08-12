@@ -156,5 +156,13 @@
 
 }
 
+@media (max-width: 768px) {
+    #treten .auth .auth__wrapper {
+        padding: 0px !important;
+        .pl-7, .pr-7 {
+            padding: 2rem 1rem !important;
+        }
+    }
+}
 
 /* AUTH PAGE END */

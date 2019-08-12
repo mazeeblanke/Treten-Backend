@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
 import ReactPhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/dist/style.css'
 
@@ -13,16 +13,37 @@ class RegisterForm extends React.Component {
 
   constructor (props) {
       super(props);
+      this.handleSubmit = this.handleSubmit.bind(this)
       this.state = {
-          phone: ''
+          phone: '',
+          isLoading: false
       }
   }
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
+    this.setState({
+        isLoading: true
+    })
+    this.props.form.validateFields((err, form) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        console.log('Received values of form: ', form);
+        axios.post('register', { name: form.first_name + ' ' + form.last_name, ...form }).then((res) => {
+            console.log(res.data)
+            this.setState({
+                isLoading: false
+            });
+            message.success('Registration Successful', 21);
+            setTimeout(() => {
+                window.location = '/';
+            }, 2000)
+        }).catch((err) => {
+            console.log(err.response.data);
+            message.error(err.response.data.message, 21);
+            this.setState({
+                isLoading: false
+            })
+        })
       }
     });
   };
@@ -39,7 +60,7 @@ class RegisterForm extends React.Component {
           })(
             <Input
               size="large"
-              type="email"
+              type="text"
               placeholder="Jonathan"
             />,
           )}
@@ -52,7 +73,7 @@ class RegisterForm extends React.Component {
           })(
             <Input
               size="large"
-              type="email"
+              type="text"
               placeholder="Doe"
             />
           )}
@@ -62,7 +83,7 @@ class RegisterForm extends React.Component {
           <label htmlFor="email">Other name (optional)</label>
             <Input
               size="large"
-              type="email"
+              type="text"
               placeholder="Adamu"
             />
         </Form.Item>
@@ -115,7 +136,7 @@ class RegisterForm extends React.Component {
             type="primary"
             htmlType="submit"
             className="auth__btn">
-            Log in
+            Register
           </Button>
         </Form.Item>
 

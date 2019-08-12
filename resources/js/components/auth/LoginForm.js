@@ -1,6 +1,5 @@
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
 import React from 'react';
-import Axios from 'axios';
 
 class LoginForm extends React.Component {
   constructor (props) {
@@ -24,9 +23,13 @@ class LoginForm extends React.Component {
             this.setState({
                 isLoading: false
             });
-            window.location = '/';
+            message.success('Successfully logged you in !', 21);
+            setTimeout(() => {
+                window.location = '/';
+            }, 2000)
         }).catch((err) => {
             console.log(err.response.data);
+            message.error('Your credentials are incorrect !', 21);
             this.setState({
                 isLoading: false
             })
