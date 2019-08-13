@@ -133,6 +133,8 @@ class RegisterForm extends React.Component {
             Forgot password
           </a> */}
           <Button
+            disabled={this.state.isLoading}
+            loading={this.state.isLoading}
             type="primary"
             htmlType="submit"
             className="auth__btn">
