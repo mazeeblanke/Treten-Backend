@@ -18,7 +18,7 @@ class LoginForm extends React.Component {
     this.props.form.validateFields((err, form) => {
       if (!err) {
         console.log('Received values of form: ', form);
-        axios.post('login', form).then((res) => {
+        axios.post('api/login', form).then((res) => {
             console.log(res.data)
             this.setState({
                 isLoading: false
@@ -35,6 +35,9 @@ class LoginForm extends React.Component {
             })
         })
       }
+      this.setState({
+        isLoading: false
+      })
     });
 
     // console.log(this.props.form.submit());

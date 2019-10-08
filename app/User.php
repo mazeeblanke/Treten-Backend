@@ -17,8 +17,17 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'first_name',
+        'last_name',
+        'other_name',
+        'phone_number',
+        'profile_pic',
+        'provider',
+        'provider_id',
+        'email',
+        'password',
     ];
+
 
     /**
      * The attributes that should be hidden for arrays.
@@ -29,6 +38,8 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+
+
     /**
      * The attributes that should be cast to native types.
      *
@@ -37,4 +48,20 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+
+    public function userable ()
+    {
+        return $this->morphTo();
+    }
+
+
+
+    public static function register ($data)
+    {
+        $user = static::create($data);
+
+        // 'password' => Hash::make($data['password'])
+    }
 }

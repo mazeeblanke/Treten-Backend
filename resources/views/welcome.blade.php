@@ -8,7 +8,7 @@
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-
+        <script src="{{ asset('js/app.js') }}" defer></script>
         <!-- Styles -->
         <style>
             html, body {

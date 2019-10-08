@@ -66,6 +66,7 @@ class Auth extends Component {
                     <div className="row justify-content-md-between">
                       <div className="col-md-6 mb-3">
                         <Button
+                          href="auth/linkedin"
                           type="primary"
                           htmlType="submit"
                           className="linkedin-btn has-full-width">
@@ -75,6 +76,7 @@ class Auth extends Component {
                       </div>
                       <div className="col-md-6 mb-3">
                         <Button
+                          href="auth/facebook"
                           type="primary"
                           htmlType="submit"
                           className="facebook-btn has-full-width">
@@ -104,6 +106,7 @@ class Auth extends Component {
                     <div className="row justify-content-md-between">
                       <div className="col-sm-6">
                         <Button
+                            href="auth/linkedin"
                             type="primary"
                             htmlType="submit"
                             className="linkedin-btn mb-4 has-full-width">
@@ -113,6 +116,7 @@ class Auth extends Component {
                       </div>
                       <div className="col-sm-6">
                         <Button
+                            href="auth/facebook"
                             type="primary"
                             htmlType="submit"
                             className="facebook-btn  mb-4 has-full-width">
