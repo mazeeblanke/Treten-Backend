@@ -150,7 +150,9 @@ Auth.propTypes = {
 
 Auth = withAuthLayout(Auth);
 
+console.log(22222227);
 
 if (document.getElementById('auth')) {
+   console.log('ejkre');
     ReactDOM.render(<Auth />, document.getElementById('auth'));
 }

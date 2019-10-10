@@ -23,15 +23,13 @@ return [
     'facebook' => [
         'client_id' => env('FACEBOOK_CLIENT_ID'),
         'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
-        'redirect' => 'http://localhost:3000/t/auth/facebook/callback',
-        // 'redirect' => 'https://9bc4779e.ngrok.io/t/auth/facebook/callbackk',
+        'redirect' => aurl('/t/auth/facebook/callback', config('app.frontend_url')),
     ],
 
     'linkedin' => [
         'client_id' => env('LINKEDIN_CLIENT_ID'),
         'client_secret' => env('LINKEDIN_CLIENT_SECRET'),
-        'redirect' => 'http://localhost:3000/t/auth/linkedin/callback',
-        // 'redirect' => 'https://9bc4779e.ngrok.io/t/auth/facebook/callbackk',
+        'redirect' => aurl('/t/auth/linkedin/callback', config('app.frontend_url')),
     ],
 
     'mailgun' => [

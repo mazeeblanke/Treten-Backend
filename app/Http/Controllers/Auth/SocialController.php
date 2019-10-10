@@ -34,11 +34,9 @@ class SocialController extends Controller
     {
         $this->validateProvider($provider);
         $userInfo = Socialite::driver($provider)->user();
-
         $user = $this->createUser($userInfo, $provider);
         auth()->login($user);
-        // dd(auth()->user());
-        return redirect()->to(request()->return_url ?? getenv('FRONTEND'));
+        return redirect()->to(config('app.frontend_url') ?? request()->return_url );
 
         // $user->token;
     }
@@ -64,8 +62,6 @@ class SocialController extends Controller
                 'provider' => $provider,
                 'provider_id' => $userInfo->id
             ]);
-
-            // dd($student->details);
 
             return $student->details;
         }
