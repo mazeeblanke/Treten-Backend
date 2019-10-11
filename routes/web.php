@@ -1,5 +1,6 @@
 <?php
 
+use App\Mail\ContactUsMail;
 use Creativeorange\Gravatar\Facades\Gravatar;
 
 /*
@@ -49,7 +50,6 @@ Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('re
 Route::get('auth/{provider}', 'Auth\SocialController@redirectToProvider');
 Route::get('auth/{provider}/callback', 'Auth\SocialController@handleProviderCallback');
 
-// https://9bc4779e.ngrok.io/t/auth/facebook/callback
 // Password Reset Routes...
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
@@ -61,3 +61,18 @@ Route::get('see', function () {
 });
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+
+
+//test
+
+Route::get('contactustest', function () {
+    // $invoice = App\Invoice::find(1);
+
+    return new ContactUsMail([
+        'email' => 'ewomaukah@yahoo.com',
+        'message' => 'jrek erkj rej rkejrejkrrjke j',
+        'first_name' => 'erjker',
+        'last_name' => 'oie ort'
+    ]);
+});

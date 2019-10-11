@@ -18,6 +18,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => []], function () {
+    // NEWSLETTER
     Route::post('/newsletter/subscribe', 'NewsletterController@store');
     Route::post('/newsletter/unsubscribe', 'NewsletterController@destroy');
+    // CONTACT US
+    Route::post('/contactus', 'ContactUsController@store');
 });

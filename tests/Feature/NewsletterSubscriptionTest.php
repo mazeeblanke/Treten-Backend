@@ -35,9 +35,28 @@ class NewsletterSubscriptionTest extends TestCase
         );
 
         $response->assertJson([
-        'message' => 'Successfully added to the mailing list'
+            'message' => 'Successfully added to the mailing list'
         ]);
         $response->assertStatus(200);
+    }
+
+    public function testCannotBeAddedToMaillistWithIncompleteInfo ()
+    {
+        $response = $this->json(
+            'POST',
+            '/api/newsletter/subscribe',
+            []
+        );
+
+        $response->assertJsonFragment([
+            'errors' => [
+                'email' => [
+                    'The email field is required.'
+                ]
+            ]
+        ]);
+
+        $response->assertStatus(422);
     }
 
     /**
