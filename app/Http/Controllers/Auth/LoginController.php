@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
+use Socialite;
+
 class LoginController extends Controller
 {
     /*
@@ -18,6 +20,8 @@ class LoginController extends Controller
     | to conveniently provide its functionality to your applications.
     |
     */
+
+
 
     use AuthenticatesUsers;
 

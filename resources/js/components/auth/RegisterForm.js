@@ -28,7 +28,7 @@ class RegisterForm extends React.Component {
     this.props.form.validateFields((err, form) => {
       if (!err) {
         console.log('Received values of form: ', form);
-        axios.post('register', { name: form.first_name + ' ' + form.last_name, ...form }).then((res) => {
+        axios.post('api/register', { as: 'student', 'phone_number': this.state.phone, ...form }).then((res) => {
             console.log(res.data)
             this.setState({
                 isLoading: false
@@ -45,6 +45,9 @@ class RegisterForm extends React.Component {
             })
         })
       }
+      this.setState({
+        isLoading: false
+      })
     });
   };
 
@@ -52,7 +55,6 @@ class RegisterForm extends React.Component {
     const { getFieldDecorator } = this.props.form;
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
-
         <Form.Item>
           <label htmlFor="email">First name</label>
           {getFieldDecorator('first_name', {
@@ -91,6 +93,7 @@ class RegisterForm extends React.Component {
         <Form.Item>
           <label htmlFor="Phone number">Phone number</label>
           <ReactPhoneInput
+            onChange={(val) => { this.setState({ phone: val }) }}
             className="has-full-width"
             defaultCountry="ng"
             value={this.state.phone}

@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
+use App\Student;
+use App\Instructor;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -50,11 +53,12 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8'],
+        $this->validate(request(), [
+            'as' => ['required', 'string', 'in:student,instructor']
+        ], [
+            'as.required' => 'The type of user is required'
         ]);
+        return Validator::make($data, ($this->getUserType($data['as']))::$rules);
     }
 
 
@@ -80,10 +84,13 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+        // return User::register($data);;
+        return ($this->getUserType($data['as']))::register($data);
+    }
+
+
+    protected function getUserType ($entity)
+    {
+        return "App\\".Str::ucfirst($entity);
     }
 }

@@ -16,3 +16,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::group(['middleware' => []], function () {
+    // NEWSLETTER
+    Route::post('/newsletter/subscribe', 'NewsletterController@store');
+    Route::post('/newsletter/unsubscribe', 'NewsletterController@destroy');
+    // CONTACT US
+    Route::post('/contactus', 'ContactUsController@store');
+});

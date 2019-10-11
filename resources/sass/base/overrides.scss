@@ -130,13 +130,16 @@ html {
 
   .facebook-btn,
   .facebook-btn:active,
+  .facebook-btn:focus,
   .facebook-btn:hover {
     width: 160px;
     height: 40px;
-    background: #3c5a99;
+    background: #3c5a99 !important;
     border-radius: 4px;
-    border-color: #3c5a99;
+    border-color: #3c5a99 !important;
     text-align: left;
+    color: white !important;
+    line-height: 38px !important;
   }
 
   .facebook-btn img,
@@ -149,10 +152,12 @@ html {
   .linkedin-btn:hover {
     width: 160px;
     height: 40px;
-    background: #0077b5;
+    background: #0077b5 !important;
     border-radius: 4px;
-    border-color: #0077b5;
+    border-color: #0077b5 !important;
     text-align: left;
+    color: white !important;
+    line-height: 38px !important;
   }
 
   /* SEARCH */
