@@ -27,11 +27,10 @@
         <!-- <server name="APP_URL" value="http://tretenweb"/> -->
         <server name="BCRYPT_ROUNDS" value="4"/>
         <server name="CACHE_DRIVER" value="array"/>
-        <server name="MAIL_DRIVER" value="array"/>
-        <server name="MAIL_DRIVER" value="array"/>
+        <!-- <server name="MAIL_DRIVER" value="log"/> -->
         <server name="DB_CONNECTION" value="sqlite"/>
         <server name="DB_DATABASE" value="/database/database.sqlite"/>
-        <server name="QUEUE_CONNECTION" value="sync"/>
+        <!-- <server name="QUEUE_CONNECTION" value="sync"/> -->
         <server name="SESSION_DRIVER" value="array"/>
     </php>
 </phpunit>

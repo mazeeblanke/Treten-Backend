@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateNewsletterSubscriptionRequest;
 use Illuminate\Http\Request;
 use \Newsletter;
 
@@ -23,7 +24,7 @@ class NewsletterController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateNewsletterSubscriptionRequest $request)
     {
         if (!Newsletter::isSubscribed($request->email))
         {
