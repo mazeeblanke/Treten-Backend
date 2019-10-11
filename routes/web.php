@@ -26,8 +26,8 @@ Route::group(['prefix' => 'api'], function() {
 
     Route::post('register', 'Auth\RegisterController@register');
 
-    Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
-    Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+    Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+    Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.reset');
 
     Route::get('current_user', function () {
         if (auth()->user()) {
@@ -53,6 +53,8 @@ Route::get('auth/{provider}/callback', 'Auth\SocialController@handleProviderCall
 // Password Reset Routes...
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
+// Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
+// Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 Route::get('see', function () {
     return (auth()->user());
