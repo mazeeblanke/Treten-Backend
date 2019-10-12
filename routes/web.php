@@ -1,6 +1,5 @@
 <?php
 
-use App\Mail\ContactUsMail;
 use Creativeorange\Gravatar\Facades\Gravatar;
 
 /*
@@ -28,7 +27,7 @@ Route::group(['prefix' => 'api'], function() {
     Route::post('register', 'Auth\RegisterController@register');
 
     Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
-    Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.reset');
+    Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.update');
 
     Route::get('current_user', function () {
         if (auth()->user()) {
@@ -51,8 +50,8 @@ Route::get('auth/{provider}', 'Auth\SocialController@redirectToProvider');
 Route::get('auth/{provider}/callback', 'Auth\SocialController@handleProviderCallback');
 
 // Password Reset Routes...
-Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
-Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
+Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.resetform');
+Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 // Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
 // Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
@@ -64,15 +63,15 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 
 
-//test
+// //test
 
-Route::get('contactustest', function () {
-    // $invoice = App\Invoice::find(1);
+// Route::get('contactustest', function () {
+//     // $invoice = App\Invoice::find(1);
 
-    return new ContactUsMail([
-        'email' => 'ewomaukah@yahoo.com',
-        'message' => 'jrek erkj rej rkejrejkrrjke j',
-        'first_name' => 'erjker',
-        'last_name' => 'oie ort'
-    ]);
-});
+//     return new ContactUsMail([
+//         'email' => 'ewomaukah@yahoo.com',
+//         'message' => 'jrek erkj rej rkejrejkrrjke j',
+//         'first_name' => 'erjker',
+//         'last_name' => 'oie ort'
+//     ]);
+// });

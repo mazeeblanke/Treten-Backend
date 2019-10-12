@@ -45,7 +45,7 @@ class StudentAuthenticationTest extends TestCase
 
         $this->assertCount(1, $users);
 
-        $response->assertStatus(302);
+        $response->assertStatus(200);
     }
 
 
@@ -70,7 +70,7 @@ class StudentAuthenticationTest extends TestCase
 
         $this->assertEquals(auth()->user()->first_name ?? null, $student->details->first_name);
 
-        $response->assertStatus(302);
+        $response->assertStatus(200);
     }
 
 
@@ -150,6 +150,86 @@ class StudentAuthenticationTest extends TestCase
             //  ->assertSee('Redirecting');
     }
 
+    public function testSendUserPasswordResetLinkValidation ()
+    {
+       $response = $this->json(
+           'POST',
+           '/api/password/email',
+           []
+       );
+
+       $response->assertJsonFragment([
+           'errors' => [
+               'email' => [
+                   'The email field is required.'
+               ]
+           ]
+       ]);
+
+    }
+
+    public function testUserCanOnlyResetPasswordWhenItWasRegisteredManually ()
+    {
+       Student::unsetEventDispatcher();
+       $student = factory(Student::class)->create();
+
+       $student->details->provider = 'facebook';
+       $student->details->provider_id = '83792379283';
+       $student->details->save();
+
+       $response = $this->json(
+           'POST',
+           '/api/password/email',
+           [
+               'email' => $student->details->email
+           ]
+       );
+
+       $response->assertJsonFragment([
+           'errors' => [
+               'email' => ['That email does not exist.']
+           ]
+       ]);
+
+        $response = $this->json(
+            'POST',
+            '/api/password/email',
+            [
+                'email' => 'jsdjk@sdjhk.com'
+            ]
+        );
+
+        $response->assertJsonFragment([
+            'errors' => [
+                'email' => ['That email does not exist.']
+            ]
+        ]);
+
+        $response->assertStatus(422);
+    }
+
+
+    public function testUserCanOnlyResetPasswordWhenRegisteredManually ()
+    {
+       \Mail::fake();
+
+       Student::unsetEventDispatcher();
+       $student = factory(Student::class)->create();
+
+       $response = $this->json(
+           'POST',
+           '/api/password/email',
+           [
+               'email' => $student->details->email
+           ]
+       );
+
+    //    \Mail::assertSent();
+
+       $response->assertJsonFragment([
+           'message' => 'We have e-mailed your password reset link!'
+       ]);
+    }
 
     // TODO: Add selenium driver for this later
     // public function testUserIsRedirectedTofacebookForSocialLogin ()

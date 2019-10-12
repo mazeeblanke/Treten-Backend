@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Tabs, Button } from 'antd';
+import { Tabs, Button, message } from 'antd';
 import withAuthLayout from '../layouts/withAuthLayout';
 import RegisterForm from '../components/auth/RegisterForm';
 import LoginForm from '../components/auth/LoginForm';
@@ -12,6 +12,9 @@ class Auth extends Component {
   constructor(props) {
     super(props);
 
+    // message.config({
+    //   maxCount: 1,
+    // });
   }
 
   componentWillMount() {
@@ -19,7 +22,9 @@ class Auth extends Component {
   }
 
   componentDidMount() {
-
+    message.config({
+      maxCount: 1,
+    });
   }
 
   componentWillReceiveProps(nextProps) {
@@ -150,9 +155,6 @@ Auth.propTypes = {
 
 Auth = withAuthLayout(Auth);
 
-console.log(22222227);
-
 if (document.getElementById('auth')) {
-   console.log('ejkre');
     ReactDOM.render(<Auth />, document.getElementById('auth'));
 }

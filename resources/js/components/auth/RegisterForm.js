@@ -3,19 +3,12 @@ import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
 import ReactPhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/dist/style.css'
 
-// const PhoneInput = dynamic(() => import('react-phone-input-2'), { ssr: false });
-
 class RegisterForm extends React.Component {
-
-//   state = {
-//     phone: ''
-//   }
 
   constructor (props) {
       super(props);
       this.handleSubmit = this.handleSubmit.bind(this)
       this.state = {
-          phone: '',
           isLoading: false
       }
   }
@@ -25,10 +18,11 @@ class RegisterForm extends React.Component {
     this.setState({
         isLoading: true
     })
+
     this.props.form.validateFields((err, form) => {
       if (!err) {
         console.log('Received values of form: ', form);
-        axios.post('api/register', { as: 'student', 'phone_number': this.state.phone, ...form }).then((res) => {
+        axios.post('api/register', { as: 'student', ...form }).then((res) => {
             console.log(res.data)
             this.setState({
                 isLoading: false
@@ -38,16 +32,28 @@ class RegisterForm extends React.Component {
                 window.location = '/';
             }, 2000)
         }).catch((err) => {
-            console.log(err.response.data);
-            message.error(err.response.data.message, 21);
+            message.error(err.response.data.message || 'The Form contains some errors', 21);
+            let errors = err.response.data.errors || {};
+
             this.setState({
                 isLoading: false
             })
+
+            this.props.form.setFields({
+              email: {
+                errors: errors.email ? [new Error(errors.email[0])] : [],
+              },
+              password: {
+                errors: errors.password ? [new Error(errors.password[0])] : [],
+              },
+            });
+        })
+      } else {
+        this.setState({
+          isLoading: false
         })
       }
-      this.setState({
-        isLoading: false
-      })
+      
     });
   };
 
@@ -92,12 +98,17 @@ class RegisterForm extends React.Component {
 
         <Form.Item>
           <label htmlFor="Phone number">Phone number</label>
-          <ReactPhoneInput
-            onChange={(val) => { this.setState({ phone: val }) }}
-            className="has-full-width"
-            defaultCountry="ng"
-            value={this.state.phone}
-          />
+          {
+            getFieldDecorator('phone_number', {
+              rules: [{ required: true, message: 'Please input your phone number' }]
+            })(
+              <ReactPhoneInput
+                className="has-full-width"
+                defaultCountry="ng"
+                value={this.state.phone}
+              />
+            )
+          }
         </Form.Item>
 
         <Form.Item className="mt-3">

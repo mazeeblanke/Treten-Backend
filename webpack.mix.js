@@ -12,4 +12,6 @@ const mix = require('laravel-mix');
  */
 
 mix.react('resources/js/app.js', 'public/js')
+   .react('resources/js/reset-password.js', 'public/js')
+   .react('resources/js/create-new-password.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css');

@@ -59,7 +59,7 @@ class ContactUsTest extends TestCase
     public function testAUserCanSubmitTheContactUsForm()
     {
 
-        // \Mail::fake();
+        \Mail::fake();
 
         Student::unsetEventDispatcher();
         $student = factory(Student::class)->create();
@@ -99,7 +99,7 @@ class ContactUsTest extends TestCase
             'id' => $student->details->id
         ]);
 
-        // \Mail::assertSent(ContactUsMail::class, 1);
+        \Mail::assertQueued(ContactUsMail::class, 1);
 
         $response->assertStatus(200);
     }

@@ -29,18 +29,30 @@ class LoginForm extends React.Component {
             }, 2000)
         }).catch((err) => {
             console.log(err.response.data);
-            message.error('Your credentials are incorrect !', 21);
+            message.error(err.response.data.message || 'Your credentials are incorrect !', 21);
+            let errors = err.response.data.errors || {};
+
             this.setState({
                 isLoading: false
             })
+
+            this.props.form.setFields({
+              email: {
+                errors: errors.email ? [new Error(errors.email[0])] : [],
+              },
+              password: {
+                errors: errors.password ? [new Error(errors.password[0])] : [],
+              },
+            });
+        })
+      } else {
+        this.setState({
+          isLoading: false
         })
       }
-      this.setState({
-        isLoading: false
-      })
+      
     });
 
-    // console.log(this.props.form.submit());
   };
 
   render() {
@@ -64,7 +76,7 @@ class LoginForm extends React.Component {
         <Form.Item>
           <label htmlFor="password">
             Password
-            <span>Forgot password?</span>
+            <span onClick={() => window.location = '/t/password/reset'}>Forgot password?</span>
           </label>
           {getFieldDecorator('password', {
             rules: [{ required: true, message: 'Please input your Password!' }],

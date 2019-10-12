@@ -11,7 +11,7 @@ class Instructor extends Model
         'consideration',
         'qualifications',
         'social_links',
-        'title'
+        'title',
     ];
 
     public static $rules = [
@@ -21,8 +21,8 @@ class Instructor extends Model
         'qualifications' => ['required', 'string'],
         'as' => ['required', 'string', 'in:student,instructor'],
         'phone_number' => ['required', 'string'],
-        'other_name' => ['string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,provider,provider_id'],
+        // 'other_name' => ['string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,provider,provider_id'],
         'password' => ['required', 'string', 'min:8'],
     ];
     //

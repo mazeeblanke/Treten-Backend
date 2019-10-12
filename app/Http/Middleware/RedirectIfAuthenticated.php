@@ -19,7 +19,7 @@ class RedirectIfAuthenticated
     {
         if (Auth::guard($guard)->check()) {
             // dd('jkk');
-            return redirect()->to(getenv('FRONTEND'));
+            return redirect()->to(config('app.frontend_url'));
         }
 
         return $next($request);
