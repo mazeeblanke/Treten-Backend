@@ -281,7 +281,7 @@ class InstructorAuthenticationTest extends TestCase
 
        $response->assertJsonFragment([
            'errors' => [
-               'email' => ['That email does not exist.']
+               'email' => ['Unable to find user for the given email address.']
            ]
        ]);
 
@@ -295,7 +295,7 @@ class InstructorAuthenticationTest extends TestCase
 
         $response->assertJsonFragment([
             'errors' => [
-                'email' => ['That email does not exist.']
+                'email' => ['Unable to find user for the given email address.']
             ]
         ]);
 

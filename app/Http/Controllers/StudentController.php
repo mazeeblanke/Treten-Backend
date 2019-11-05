@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
 use App\Student;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class StudentController extends Controller
 {
@@ -12,9 +14,31 @@ class StudentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $pageSize = $request->pageSize ?? 6;
+        $page = $request->page ?? 1;
+        $q = $request->q ?? '';
+        $students = User::with('details')
+            ->whereStatus('active')
+            ->where('userable_type', 'App\Student')
+            ->where(function ($builder) use($q) {
+                if ($q) {
+                    return $builder
+                        ->orWhere('first_name', 'like', '%' .$q. '%')
+                        ->orWhere('email', 'like', '%' .$q. '%')
+                        ->orWhere('last_name', 'like', '%' .$q. '%')
+                        ->orWhere('phone_number', 'like', '%' .$q. '%')
+                        ->orWhere('status', 'like', '%' .$q. '%');
+                }
+                return $builder;
+            })
+            ->latest()
+            ->paginate($pageSize, '*', 'page', $page);
+
+        return response()->json(array_merge([
+            'message' => 'Successfully fetched students',
+        ], $students->toArray()));
     }
 
     /**

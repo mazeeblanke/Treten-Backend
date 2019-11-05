@@ -58,7 +58,7 @@ class SocialController extends Controller
                 'first_name'     => $firstName,
                 'last_name'     => $lastName === $firstName ? '' : $lastName,
                 'email'    => $userInfo->email,
-                'profile_pic'    => $userInfo->avatar,
+                'profile_pic'    => $userInfo->avatar_original,
                 'provider' => $provider,
                 'provider_id' => $userInfo->id
             ]);

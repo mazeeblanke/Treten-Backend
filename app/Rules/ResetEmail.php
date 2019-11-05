@@ -38,6 +38,7 @@ class ResetEmail implements Rule
      */
     public function message()
     {
-        return 'That :attribute does not exist.';
+        // return 'That :attribute does not exist.';
+        return 'Unable to find user for the given email address.';
     }
 }

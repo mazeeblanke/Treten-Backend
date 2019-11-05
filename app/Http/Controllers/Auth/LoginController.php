@@ -63,6 +63,18 @@ class LoginController extends Controller
         );
     }
 
+    /**
+     * Log the user out of the application.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        \Auth::logout();
+        return redirect()->to($request->return_url ?? config('app.frontend_url'));
+        // return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
+    }
+
 
      /**
      * Send the response after the user was authenticated.

@@ -28,12 +28,14 @@ class AddProviderIdProviderToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['provider', 'provider_id']);
-        });
+        
 
         Schema::table('users', function (Blueprint $table) {
             $table->dropUnique(['email', 'provider', 'provider_id']);
+        });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['provider', 'provider_id']);
         });
     }
 }

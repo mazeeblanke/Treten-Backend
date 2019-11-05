@@ -18,6 +18,18 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => []], function () {
+    
+     //CSV ENDPOINTS
+     Route::get('{type}/download', 'DownloadController@downloadcsv');
+     
+    // Route::get('/u', function () {
+    //     dd('sjkdjks');
+    // });
+    // Route::get('/downlaod', function () {
+    //     dd('sjkdjks');
+    // });
+    // Route::get('/downlaod', 'UserController@downloadcsv');
+    
     // NEWSLETTER
     Route::post('/newsletter/subscribe', 'NewsletterController@store');
     Route::post('/newsletter/unsubscribe', 'NewsletterController@destroy');
@@ -27,4 +39,5 @@ Route::group(['middleware' => []], function () {
 
     // BECOME AN INSTRUCTOR
     Route::post('become-an-instructor', 'Auth\RegisterController@register');
+
 });
