@@ -1,6 +1,6 @@
 <?php
 
-use App\Mail\ContactUsMail;
+use App\Events\done;
 use Creativeorange\Gravatar\Facades\Gravatar;
 
 /*
@@ -18,8 +18,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Auth::routes();
-
 Route::group(['prefix' => 'api'], function() {
 
     Route::post('login', 'Auth\LoginController@login');
@@ -27,50 +25,52 @@ Route::group(['prefix' => 'api'], function() {
 
     Route::post('register', 'Auth\RegisterController@register');
 
-    Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail');
-    Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+    Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
+    Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.update');
 
-    Route::get('current_user', function () {
-        if (auth()->user()) {
-            $user = auth()->user();
-            $user['gravatar'] = $user->profile_pic ?? Gravatar::get($user->email);
-            return response()->json($user, 200);
-        }
-        return response()->json(['dd' => 232], 422);
-    });
+    Route::post('blog-posts', 'BlogPostController@store');
+    Route::get('blog-posts', 'BlogPostController@index');
+    Route::get('latest-blog-posts', 'BlogPostController@latestBlogPosts');
 
+    Route::get('current_user', 'UserController@currentUser');
+
+    Route::get('instructors', 'InstructorController@index');
+    Route::get('instructor/{instructor_slug}', 'InstructorController@show');
+    Route::post('instructor/{instructor}', 'InstructorController@update');
+
+    Route::get('students', 'StudentController@index');
+    Route::get('users', 'UserController@index');
+    Route::post('user', 'UserController@update')->middleware('auth');
+
+    Route::get('transactions', 'TransactionController@index'); 
+
+    Route::get('messagethread', 'MessageController@index')->name('messages');
+    Route::get('messagethread/{message_uuid}', 'MessageController@show')->name('message.show');
+    Route::post('messages', 'MessageController@store')->name('message.store');
+
+    Route::get('dashboard-stats', 'DashboardController@dashboardStats')->middleware('auth');
 });
 
 
 
 // Authentication Routes...
 Route::get('auth', 'Auth\LoginController@showLoginForm')->name('login');
+Route::get('logout', 'Auth\LoginController@logout');
+
 // Registration Routes...
 Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('register');
 Route::get('auth/{provider}', 'Auth\SocialController@redirectToProvider');
 Route::get('auth/{provider}/callback', 'Auth\SocialController@handleProviderCallback');
 
 // Password Reset Routes...
-Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm');
-Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm');
-
-Route::get('see', function () {
-    return (auth()->user());
-});
+Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.resetform');
+Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 
 Route::get('/home', 'HomeController@index')->name('home');
 
 
-
-//test
-
-Route::get('contactustest', function () {
-    // $invoice = App\Invoice::find(1);
-
-    return new ContactUsMail([
-        'email' => 'ewomaukah@yahoo.com',
-        'message' => 'jrek erkj rej rkejrejkrrjke j',
-        'first_name' => 'erjker',
-        'last_name' => 'oie ort'
-    ]);
+Route::get('/fire', function () {
+    logger('firing...');
+    broadcast(new done());
+    logger('done firing ...');
 });

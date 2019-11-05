@@ -19,7 +19,7 @@ class Student extends Model implements Registrable
         'as' => ['required', 'string', 'in:student,instructor'],
         'phone_number' => ['required', 'string'],
         'other_name' => ['string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,provider,provider_id'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,provider,provider_id'],
         'password' => ['required', 'string', 'min:8'],
     ];
 

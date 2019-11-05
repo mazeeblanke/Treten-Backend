@@ -44,8 +44,35 @@ class LoginController extends Controller
 
     public function showLoginForm()
     {
-        // dd('sdsd');
         return view('auth.index');
+    }
+
+    /**
+     * Get the needed authorization credentials from the request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        return array_merge(
+            $request->only($this->username(), 'password'),
+            [
+                'status' => 'active'
+            ]
+        );
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        \Auth::logout();
+        return redirect()->to($request->return_url ?? config('app.frontend_url'));
+        // return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
 
 
@@ -62,7 +89,14 @@ class LoginController extends Controller
 
         $this->clearLoginAttempts($request);
 
-        return redirect()->to($request->return_url ?? getenv('FRONTEND'));
+        if ($request->wantsJson())
+        {
+            return response()->json([
+                'message' => 'Successfully logged you in!'
+            ]);
+        }
+
+        return redirect()->to($request->return_url ?? config('app.frontend_url'));
 
         // return $this->authenticated($request, $this->guard()->user())
         //         ?: redirect()->intended($this->redirectPath());

@@ -1,6 +1,14 @@
 @extends('layouts.app')
 
+@section('mainscript')
+    <script src="{{ asset('js/reset-password.js') }}" defer></script>
+@endsection
+
 @section('content')
+    <div id="auth"></div>
+@endsection
+
+<!-- @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -44,4 +52,4 @@
         </div>
     </div>
 </div>
-@endsection
+@endsection -->

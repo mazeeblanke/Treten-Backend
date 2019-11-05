@@ -14,7 +14,12 @@ class InstructorObserver
      */
     public function created(Instructor $instructor)
     {
-        $instructor->details()->create(request()->all());
+        $data = array_merge(
+            request()->all(),
+            [
+                'status' => 'pending'
+            ]);
+        $instructor->details()->create($data);
     }
 
     /**

@@ -58,19 +58,37 @@ class RegisterController extends Controller
         ], [
             'as.required' => 'The type of user is required'
         ]);
+
         return Validator::make($data, ($this->getUserType($data['as']))::$rules);
     }
 
 
     public function register(Request $request)
     {
-        $this->validator($request->all())->validate();
+        
+        if ($this->validator($request->all())->fails())
+        {
+            $errors = $this->validator($request->all())->errors();
+            return response()->json([
+                'errors' => $errors
+            ], 422);
+        }
 
         event(new Registered($user = $this->create($request->all())));
 
-        $this->guard()->login($user);
+        if ($request->as === 'student')
+        {
+            $this->guard()->login($user);
+        }
+       
+        if ($request->wantsJson())
+        {
+            return response()->json([
+                'message' => 'Successfully registered user!'
+            ]);
+        }
 
-        return redirect()->to($request->return_url ?? getenv('FRONTEND'));
+        return redirect()->to($request->return_url ?? config('app.frontend_url'));
 
         // return $this->registered($request, $user)
         //                 ?: redirect($this->redirectPath());

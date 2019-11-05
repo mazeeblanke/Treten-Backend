@@ -10,6 +10,7 @@ use App\Observers\StudentObserver;
 use App\Observers\InstructorObserver;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+// use Illuminate\Database\Query\Grammars\MySqlGrammar;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+        
     }
 
     /**
@@ -30,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        
+
         Schema::defaultStringLength(191);
         User::observe(UserObserver::class);
         Student::observe(StudentObserver::class);
