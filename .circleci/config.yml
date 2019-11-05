@@ -18,7 +18,7 @@ jobs:
 
   deploy-to-staging:
     docker:
-      - image: circleci/php:7.1
+      - image: circleci/php:7.3
     working_directory: ~/tretenBE
     steps:
       - checkout
