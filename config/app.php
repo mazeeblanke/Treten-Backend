@@ -168,7 +168,7 @@ return [
         Creativeorange\Gravatar\GravatarServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
-        Barryvdh\Debugbar\ServiceProvider::class,
+        // Barryvdh\Debugbar\ServiceProvider::class,
 
         /*
          * Package Service Providers...
