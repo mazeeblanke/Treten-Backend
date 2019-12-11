@@ -115,7 +115,7 @@ class CourseController extends Controller
                 )
                 ->join(
                     'course_batch_author', 
-                    'course_batch_author.course_id',`
+                    'course_batch_author.course_id',
                     'courses.id'
                 );
 
