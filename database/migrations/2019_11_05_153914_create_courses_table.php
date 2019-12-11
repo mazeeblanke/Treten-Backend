@@ -40,11 +40,11 @@ class CreateCoursesTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             
-            $table->foreign('author_id')
-                ->references('id')
-                ->on('users')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
+            // $table->foreign('author_id')
+            //     ->references('id')
+            //     ->on('users')
+            //     ->onDelete('cascade')
+            //     ->onUpdate('cascade');
         });
     }
 
