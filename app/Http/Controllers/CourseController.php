@@ -102,8 +102,9 @@ class CourseController extends Controller
                     'message' => 'Unable to find user specified',
                     'data' => []
                 ]);
+            } else {
+                $authorId = $authorId->id;
             }
-            $authorId = $authorId->id;
             $sub = Course::select(
                 \DB::raw('max(course_batch_author.id) as cba_id'),
                     'courses.id', 
@@ -114,7 +115,7 @@ class CourseController extends Controller
                 )
                 ->join(
                     'course_batch_author', 
-                    'course_batch_author.course_id', 
+                    'course_batch_author.course_id',`
                     'courses.id'
                 );
 
