@@ -1,11 +1,11 @@
 {
-	"authHost": "http://tretenweb",
+	"authHost": "http://159.89.234.185/",
 	"authEndpoint": "/broadcasting/auth",
 	"clients": [],
 	"database": "redis",
 	"databaseConfig": {
 		"redis": {
-			"host": "tretenredis",
+			"host": "localhost",
 			"port": "6379"
 		},
 		"sqlite": {
