@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\User;
+use App\UserGroup;
 use Illuminate\Support\Facades\Hash;
 
 class UserObserver
@@ -15,7 +16,9 @@ class UserObserver
      */
     public function creating(User $user)
     {
-        $user->password = Hash::make(request('password'));
+        if (request('password')) {
+            $user->password = Hash::make(request('password'));
+        }
     }
 
 
@@ -27,7 +30,21 @@ class UserObserver
      */
     public function created(User $user)
     {
-        //
+        // $role = optional($user->roles->first())->name;
+        // if (!$role) return;
+        // if ($role === 'admin') {
+        //     $group = UserGroup::whereGroupName('all admins')->first();
+        // }
+
+        // // if ($role === 'instructor') {
+        // //     $group = UserGroup::whereGroupName('all instructors')->first();
+        // // }
+
+        // // if ($role === 'student') {
+        // //     $group = UserGroup::whereGroupName('all students')->first();
+        // // }
+
+        // $user->userGroups()->attach($group->id);
     }
 
     /**
@@ -38,7 +55,7 @@ class UserObserver
      */
     public function updated(User $user)
     {
-        //
+        // dd('sdsd');
     }
 
     /**

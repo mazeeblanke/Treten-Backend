@@ -48,6 +48,10 @@
   height: 15px;
 }
 
+.h20{
+  height: 20px;
+}
+
 .h28{
   height: 28px;
 }
@@ -267,6 +271,11 @@
   color: #fff;
   background-color: #E12828 !important;
   border-color: #E12828 !important;
+}
+
+.has-error .ant-input, .has-error input, .has-error .ant-input:hover {
+  background-color: #fff !important;
+  border-color: #f5222d !important;
 }
 
 // .ant-btn-primary:hover, .ant-btn-primary:focus {

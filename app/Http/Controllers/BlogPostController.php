@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\BlogPost;
 use App\Http\Requests\CreateBlogPostRequest;
+use App\Http\Resources\BlogPost as BlogPostResource;
+use App\Http\Resources\BlogPostCollection;
 use Illuminate\Http\Request;
 
 class BlogPostController extends Controller
@@ -22,9 +24,7 @@ class BlogPostController extends Controller
             ->orderBy('published_at', 'desc')
             ->paginate($pageSize, '*', 'page', $page);
 
-        return response()->json(array_merge([
-            'message' => 'Successfully fetched blog posts',
-        ], $blogPosts->toArray()));
+        return response()->json(new BlogPostCollection($blogPosts));
     }
 
     public function latestBlogPosts()
@@ -35,10 +35,7 @@ class BlogPostController extends Controller
             ->take(2)
             ->get();
 
-        return response()->json([
-            'message' => 'Successfully fetched blog posts',
-            'blogPosts' => $blogPosts 
-        ]);
+        return response()->json(new BlogPostCollection($blogPosts));
     }
 
     /**
@@ -103,9 +100,22 @@ class BlogPostController extends Controller
      * @param  \App\BlogPost  $blogPost
      * @return \Illuminate\Http\Response
      */
-    public function show(BlogPost $blogPost)
+    public function show($blogpost_slug)
     {
-        //
+        $blogPostSlugSegments = explode('_', $blogpost_slug);
+        $blogPostId = $blogPostSlugSegments[count($blogPostSlugSegments) - 1];
+
+        $blogPost = BlogPost::whereId((int) $blogPostId)->with('author')->first();
+
+        if (!$blogPost) {
+            return response()->json([
+                'message' => 'Unable to find the requested blog post',
+            ], 422);
+        }
+
+        return response()->json((new BlogPostResource($blogPost))->additional([
+            'message' => 'Successfully fetched blog post',
+        ]));
     }
 
     /**

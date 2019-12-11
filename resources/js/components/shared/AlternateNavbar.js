@@ -2,7 +2,6 @@ import React from 'react';
 import Brand from './Brand';
 import {
   Navbar,
-  NavbarBrand,
 } from 'reactstrap';
 
 const AlternateNavbar = () => {

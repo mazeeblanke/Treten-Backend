@@ -10,7 +10,7 @@ class Student extends Model implements Registrable
     //
 
     protected $fillable = [
-        'best_instructor'
+        'best_instructor',
     ];
 
     public static $rules = [
@@ -25,7 +25,6 @@ class Student extends Model implements Registrable
 
     public static function register ($data)
     {
-        // dd($data);
         $student = static::create($data);
         return $student->details;
     }

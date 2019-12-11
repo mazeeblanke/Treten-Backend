@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Course;
+use App\CourseBatchAuthor;
+use App\CourseEnrollment;
 use App\Instructor;
 use App\Student;
 use Illuminate\Http\Request;
@@ -18,16 +21,37 @@ class DashboardController extends Controller
         //
     }
 
-    public function dashboardStats (Request $request)
+    public function dashboardStats(Request $request)
     {
+        $stats = [];
+        if (!auth()->check()) {
+            return response()->json(array_merge($stats, [
+                'message' => 'successfully fetched dashboard stats',
+            ]));  
+        }
+        if (auth()->user()->role === 'admin') {
+            $stats = [
+                'studentsCount' => Student::count(),
+                'instructorsCount' => Instructor::count(),
+                'coursesCount' => Course::count(),
+                'activeClassesCount' => CourseEnrollment::activeClassesCount(),
+                'latestEnrollments' => CourseEnrollment::lastFour()
+            ];
+        }
 
-        return response()->json([
+        if (auth()->user()->role === 'instructor') {
+            $stats = [
+                'studentsCount' => Instructor::studentsCount(auth()->user()->id),
+                'coursesCount' => CourseBatchAuthor::whereAuthorId(auth()->user()->id)
+                    ->groupBy('course_id', 'author_id')
+                    ->get(['course_id', 'author_id'])
+                    ->count(),
+            ];
+        }
+
+        return response()->json(array_merge($stats, [
             'message' => 'successfully fetched dashboard stats',
-            'students_count' => Student::count(),
-            'instructors_count' => Instructor::count(),
-            'courses_count' => 44,
-            'active_classes_count' => 20
-        ]);
+        ]));
     }
 
     /**

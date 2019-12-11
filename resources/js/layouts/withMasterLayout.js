@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import Navbar from '../../components/shared/Navbar';
-
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
-
-const { Header, Content, Footer } = Layout;
-const { SubMenu } = Menu;
+import 'simple-react-notifications/dist/index.css'
 
 export default (Page) => {
   return class extends Component {
@@ -20,15 +16,9 @@ export default (Page) => {
 
     render () {
       return (
-        // <>
-        //   <Navbar {...this.props} />
-        //   <Page {...this.props} />
-        // </>
-
         <div id="treten">
           <Navbar noBoxShadow {...this.props} />
           <Page {...this.props} />
-          {/* <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer> */}
         </div>
       )
     }

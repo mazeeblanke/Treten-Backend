@@ -7,7 +7,7 @@ use App\Student;
 use Faker\Generator as Faker;
 
 $factory->define(Message::class, function (Faker $faker) {
-    Student::unsetEventDispatcher();
+    // Student::unsetEventDispatcher();
     return [
         'message_uuid' => $faker->uuid,
         'sender_id' => $faker->randomElement([

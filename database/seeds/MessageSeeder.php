@@ -25,14 +25,14 @@ class MessageSeeder extends Seeder
             'message_type' => 'chat',
             'message' => "Emerged into consciousness laws of physics the only home we've ever known laws of physics ",
             'created_at' => \Carbon\Carbon::now()->subDays(1)   ,
-            'sender_id' => factory(Instructor::class)->create()->id,
+            'sender_id' => 3,
             'receiver_id' => 2
         ]);
         factory(Message::class)->create([
             'message_type' => 'chat',
             'message' => "believe it now",
             'created_at' => \Carbon\Carbon::now()->subDays(2)   ,
-            'sender_id' => factory(Instructor::class)->create()->id,
+            'sender_id' => 4,
             'receiver_id' => 2
         ]);
         // factory(Message::class)->create([

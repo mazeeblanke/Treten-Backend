@@ -48,7 +48,10 @@ html {
   }
 
   .ant-input {
-    border: 1px solid #d3d4d8;
+    // border: 1px solid #d3d4d8;
+
+    background: white;
+    border: 1px solid #cccccc;
   }
 
   .slick-slide {
@@ -98,8 +101,14 @@ html {
         position: relative; */
   }
 
-  .slick-prev:before,
-  .slick-next:before {
+  .slick-prev:before{
+    display: none !important
+  }
+
+  .slick-prev:before, .slick-next:before {
+    font-family: 'slick';
+    font-size: 28px;
+    color: black !important;
   }
 
   /* .slick-list{padding:0 20% 0 0;} */
@@ -114,7 +123,7 @@ html {
 
   input,
   textarea {
-    border: 1px solid #f0f1f3 !important;
+    border: 1px solid #f0f1f3;
   }
 
   input {

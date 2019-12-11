@@ -93,6 +93,7 @@ class MessageTest extends TestCase
                 'GET',
                 "/api/messagethread?type=chat&page=$page&pageSize=$pageSize"
             );
+
         $response->assertSee($message2->message);
         $response->assertSee($message4->message);
         $response->assertDontSee($message3->message);

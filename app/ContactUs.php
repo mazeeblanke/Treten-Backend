@@ -2,7 +2,6 @@
 
 namespace App;
 
-use App\Jobs\ProcessContactUsMail;
 use App\Mail\ContactUsMail;
 use Illuminate\Database\Eloquent\Model;
 
@@ -16,29 +15,37 @@ class ContactUs extends Model
         'email',
         'message',
         'phone_number',
-        'user_id'
+        'user_id',
     ];
 
     public static $rules = [
-        'first_name' => 'required',
-        'last_name' => 'required',
+        'firstName' => 'required',
+        'lastName' => 'required',
         'email' => 'required|email',
         'message' => 'required',
-        'phone_number' => 'required',
-        'user_id' => 'sometimes|exists:users,id',
-    ]; 
+        'phoneNumber' => 'required',
+        // 'userId' => 'sometimes|exists:users,id',
+    ];
 
     public static $messages = [
 
     ];
 
-    public static function initialize (Array $data)
+    public static function initialize(array $data)
     {
         $instance = new static;
-        $instance->data = $data;
+        $payload = [
+            'first_name' => $data['firstName'],
+            'last_name' => $data['lastName'],
+            'email' => $data['email'],
+            'phone_number' => $data['phoneNumber'],
+            'message' => $data['message'],
+            'user_id' => auth()->check() ? request()->user()->id: null
+        ];
+        $instance->data = $payload;
 
-        $instance->create($data);
-        
+        $instance->create($payload);
+
         return $instance;
 
     }
@@ -46,6 +53,7 @@ class ContactUs extends Model
     public function fire()
     {
         \Mail::to(config('mail.to'))
-            ->queue(new ContactUsMail($this->data)); 
+            ->send(new ContactUsMail($this->data));
+        // ->queue(new ContactUsMail($this->data));
     }
 }

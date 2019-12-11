@@ -1,5 +1,7 @@
-import { Form, Icon, Input, Button, Checkbox, message } from 'antd';
+import { Form, Input, Button } from 'antd';
 import React from 'react';
+import queryString from 'query-string';
+import notifier from 'simple-react-notifications';
 
 class LoginForm extends React.Component {
   constructor (props) {
@@ -11,25 +13,26 @@ class LoginForm extends React.Component {
   }
 
   handleSubmit(e) {
+    const parsed = queryString.parse(location.search)
+    const redirect = (parsed || {}).redirect
     e.preventDefault();
     this.setState({
         isLoading: true
     })
     this.props.form.validateFields((err, form) => {
       if (!err) {
-        console.log('Received values of form: ', form);
+        // console.log('Received values of form: ', form);
         axios.post('api/login', form).then((res) => {
-            console.log(res.data)
             this.setState({
                 isLoading: false
             });
-            message.success('Successfully logged you in !', 21);
+            notifier.success('Successfully logged you in !')
             setTimeout(() => {
-                window.location = '/';
+                window.location = redirect || '/';
             }, 2000)
         }).catch((err) => {
-            console.log(err.response.data);
-            message.error(err.response.data.message || 'Your credentials are incorrect !', 21);
+            // console.log(err.response.data);
+            notifier.error('ERROR! '+err.response.data.message || 'Your credentials are incorrect !')
             let errors = err.response.data.errors || {};
 
             this.setState({
@@ -53,7 +56,7 @@ class LoginForm extends React.Component {
       
     });
 
-  };
+  }
 
   render() {
     const { getFieldDecorator } = this.props.form;
@@ -89,13 +92,6 @@ class LoginForm extends React.Component {
         </Form.Item>
 
         <Form.Item className="is-full-width">
-          {/* {getFieldDecorator('remember', {
-            valuePropName: 'checked',
-            initialValue: true,
-          })(<Checkbox>Remember me</Checkbox>)}
-          <a className="login-form-forgot" href="">
-            Forgot password
-          </a> */}
           <Button
             disabled={this.state.isLoading}
             loading={this.state.isLoading}

@@ -139,7 +139,7 @@ return [
     */
 
     'providers' => [
-
+        
         /*
          * Laravel Framework Service Providers...
          */
@@ -166,11 +166,15 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         Creativeorange\Gravatar\GravatarServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
         /*
          * Package Service Providers...
          */
+
+        
 
         /*
          * Application Service Providers...
@@ -180,6 +184,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        Unicodeveloper\Paystack\PaystackServiceProvider::class
 
     ],
 
@@ -233,6 +238,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
         'Gravatar' => Creativeorange\Gravatar\Facades\Gravatar::class,
         'Paystack' => Unicodeveloper\Paystack\Facades\Paystack::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
     ],
 
 ];

@@ -1,24 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Tabs, Button, Input, Form, message } from 'antd';
+import { Tabs, Button, Input, Form } from 'antd';
 import withAuthLayout from '../layouts/withAuthLayout';
 import ReactDOM from 'react-dom';
 import queryString from 'query-string'
+import notifier from 'simple-react-notifications';
 
 const { TabPane } = Tabs;
 
 class PasswordReset extends Component {
   constructor(props) {
     super(props);
-
     this.createNewPassword = this.createNewPassword.bind(this)
     this.state = {
       isCreatingNewPassword: false
     }
-
-    message.config({
-      maxCount: 1,
-    });
   }
 
   createNewPassword(e) {
@@ -29,24 +25,22 @@ class PasswordReset extends Component {
 
     this.props.form.validateFields((err, form) => {
       if (!err) {
-        console.log('Received values of form: ', form);
         let qs = queryString.parseUrl(location.href);
-        axios.post('/t/api/password/reset', { ...form, password_confirmation: form.password, email: qs.query.email, token: location.href.substring(location.href.lastIndexOf('/') + 1, location.href.lastIndexOf('?')) }).then((res) => {
-          console.log(res.data)
+        axios.post('/t/api/password/reset', { 
+          ...form, 
+          password_confirmation: form.password, 
+          email: qs.query.email, 
+          token: location.href.substring(location.href.lastIndexOf('/') + 1, location.href.lastIndexOf('?')) 
+        }).then((res) => {
           this.setState({
             isCreatingNewPassword: false
           });
-          message.success(res.data.message, false);
+          notifier.success(res.data.message)
           setTimeout(() => {
               window.location = '/';
           }, 2000)
         }).catch((err) => {
           let error;
-          console.log(err.response);
-          console.log(err.response.data);
-          // console.log(err.response.data.errors.password[0]);
-          // err.response.data.errors.email instanceof Array ?  err.response.data.errors.email[0] : err.response.data.errors.email 
-          
           if (err.response.data.email) {
             error = err.response.data.email;
           }
@@ -62,10 +56,7 @@ class PasswordReset extends Component {
               error = err.response.data.errors.password[0];
             }
           }
-          
-
-          console.log(error);
-          message.error(error, 25);
+          notifier.error('ERROR! '+error)
           this.setState({
             isCreatingNewPassword: false
           })

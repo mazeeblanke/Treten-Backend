@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Instructor;
+use App\Events\NewUserRegistered;
+use Spatie\Permission\Models\Role;
 
 class InstructorObserver
 {
@@ -14,12 +16,19 @@ class InstructorObserver
      */
     public function created(Instructor $instructor)
     {
-        $data = array_merge(
-            request()->all(),
-            [
-                'status' => 'pending'
-            ]);
-        $instructor->details()->create($data);
+        if (count(request()->all()))
+        {
+            $role = Role::firstOrCreate(['name' => 'instructor'], ['name' => 'instructor']);
+            $data = array_merge(
+                request()->all(),
+                [
+                    // 'status' => 'active'
+                ]);
+            $instructor->details()->create($data);
+            $instructor->details->assignRole($role);
+            
+            event(new NewUserRegistered($instructor->details));
+        }
     }
 
     /**

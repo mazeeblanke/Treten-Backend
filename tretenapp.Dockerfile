@@ -30,7 +30,9 @@ FROM php:7.3-fpm
 WORKDIR /treten
 
 RUN apt-get update && \ 
-    apt-get install -y libzip-dev zip git nodejs libpng-dev libjpeg-dev libfreetype6-dev && \
+    apt-get install -y libzip-dev zip git nodejs libpng-dev libjpeg-dev libfreetype6-dev libmagickwand-dev \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick && \
     docker-php-ext-configure zip --with-libzip && \
     docker-php-ext-install pdo pdo_mysql zip
 
@@ -60,6 +62,8 @@ RUN npm install
 # COPY --from=composerBuild /treten/vendor /treten/vendor
 
 # COPY --from=nodeBuild /treten/node_modules /treten/node_modules
+
+
 
 COPY . .
 

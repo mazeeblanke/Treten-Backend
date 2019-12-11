@@ -9,13 +9,13 @@ use Faker\Generator as Faker;
 
 $factory->define(BlogPost::class, function (Faker $faker) {
 
-    Instructor::unsetEventDispatcher();
-    $instructor = factory(Instructor::class)->create();
+    // Instructor::unsetEventDispatcher();
+    // $instructor = factory(Instructor::class)->create();
 
     return [
         'title' => $faker->sentence,
         'body' => $faker->paragraph(4),
-        'author_id' => $instructor->details->id,
+        'author_id' => $faker->randomElement([1,2,4,3,5]),
         'published_at' => Carbon\Carbon::now(),
         'published' => 1,
         'blog_image' => $faker->randomElement([
@@ -32,4 +32,3 @@ $factory->define(BlogPost::class, function (Faker $faker) {
 $factory->afterCreating(BlogPost::class, function($post, $faker) {
     $post->tags()->saveMany(factory(Tag::class, 4)->create());
 });
-

@@ -18,7 +18,6 @@ class RedirectIfAuthenticated
     public function handle($request, Closure $next, $guard = null)
     {
         if (Auth::guard($guard)->check()) {
-            // dd('jkk');
             return redirect()->to(config('app.frontend_url'));
         }
 

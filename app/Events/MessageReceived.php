@@ -2,15 +2,14 @@
 
 namespace App\Events;
 
+use App\Http\Resources\Message as MessageResource;
 use App\Message;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Queue\SerializesModels;
 
 // class MessageReceived
 class MessageReceived implements ShouldBroadcastNow
@@ -26,7 +25,7 @@ class MessageReceived implements ShouldBroadcastNow
      */
     public function __construct(Message $message)
     {
-        $this->message = $message;
+        $this->message = new MessageResource($message);
     }
 
     /**

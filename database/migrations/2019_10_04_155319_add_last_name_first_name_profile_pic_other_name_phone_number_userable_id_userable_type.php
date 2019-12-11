@@ -19,6 +19,7 @@ class AddLastNameFirstNameProfilePicOtherNamePhoneNumberUserableIdUserableType e
             $table->text('profile_pic')->nullable();
             $table->string('other_name', 255)->nullable();
             $table->string('phone_number', 255)->nullable();
+            $table->text('title')->nullable();
             $table->unsignedBigInteger('userable_id')->nullable();
             $table->text('userable_type')->nullable();
         });
@@ -46,6 +47,7 @@ class AddLastNameFirstNameProfilePicOtherNamePhoneNumberUserableIdUserableType e
                 'other_name',
                 'phone_number',
                 'userable_id',
+                'title',
                 'userable_type',
             ]);
         });

@@ -9,8 +9,9 @@ class BlogPost extends Model
 {
 
     protected $appends = [
+        'blog_slug',
         'content_summary',
-        'friendly_published_at'
+        'friendly_published_at',
     ];
 
     protected $fillable = [
@@ -18,11 +19,11 @@ class BlogPost extends Model
         'body',
         'title',
         'published_at',
-        'author_id'
+        'author_id',
     ];
 
     protected $dates = [
-        'published_at'
+        'published_at',
     ];
 
     public static $rules = [
@@ -32,28 +33,34 @@ class BlogPost extends Model
         'author_id' => 'required|numeric',
     ];
 
-    public function getBlogImageAttribute ($value) {
+    public function getBlogImageAttribute($value)
+    {
         return \Storage::url($value);
     }
 
-    public function getFriendlyPublishedAtAttribute ()
+    public function getFriendlyPublishedAtAttribute()
     {
         return $this->published_at->format('d M Y');
     }
 
-    public function getContentSummaryAttribute ()
+    public function getContentSummaryAttribute()
     {
         // dd($this->body);
         // return 'der';
         return substr($this->body, 0, 150);
     }
 
-    public function tags ()
+    public function tags()
     {
         return $this->belongsToMany(Tag::class);
     }
 
-    public function author ()
+    public function getBlogSlugAttribute()
+    {
+        return \Str::slug("{$this->title} {$this->id}", '_');
+    }
+
+    public function author()
     {
         return $this->belongsTo(User::class);
     }

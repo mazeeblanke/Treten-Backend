@@ -7,6 +7,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Transaction extends Model
 {
+    protected $fillable = [
+        'invoice_id',
+        'name',
+        'email',
+        'description',
+        'amount',
+        'transaction_id',
+        'user_id',
+        'course_id',
+        'course_batch_id',
+        'authentication_code',
+        'status',
+        'data'
+    ];
 
     protected $appends = [
         'date',
@@ -20,6 +34,18 @@ class Transaction extends Model
     public function getDateAttribute()
     {
         return $this->created_at->format('Y/m/d');
+    }
+
+    public function getDataAttribute($value)
+    {
+        return unserialize($value)
+        ? unserialize($value)
+        : [];
+    }
+
+    public function setDataAttribute($value)
+    {
+        $this->attributes['data'] = serialize($value);
     }
 
     public static function toCSV()

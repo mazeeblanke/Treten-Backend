@@ -25,11 +25,8 @@ class CreateTransactionsTable extends Migration
             $table->string('course_id');
             $table->string('course_batch_id');
             $table->string('authentication_code')->nullable();
-            $table->enum('status', [
-                'pending',
-                'failed',
-                'success'
-            ]);
+            $table->string('status');
+            $table->text('data')->nullable();
             $table->timestamps();
         });
     }

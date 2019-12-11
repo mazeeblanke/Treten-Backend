@@ -21,6 +21,7 @@ class CreateMessagesTable extends Migration
             $table->text('hash');
             $table->text('message');
             $table->text('title')->nullable();
+            $table->text('group_id')->nullable();
             $table->enum('message_type', [
                 'chat',
                 'broadcast'

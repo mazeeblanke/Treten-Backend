@@ -76,6 +76,10 @@ class ResetPasswordController extends Controller
         $broker = $this->getBroker();
         $response = Password::broker($broker)->reset($credentials, function ($user, $password) {
             $this->resetPassword($user, $password);
+            if ($user->isNotActive()) {
+                \Auth::logout();
+                session()->flush();
+            }
         });
 
         switch ($response) {

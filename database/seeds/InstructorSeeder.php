@@ -1,6 +1,7 @@
 <?php
 
 use App\Instructor;
+use Spatie\Permission\Models\Role;
 use Illuminate\Database\Seeder;
 
 class InstructorSeeder extends Seeder
@@ -12,18 +13,25 @@ class InstructorSeeder extends Seeder
      */
     public function run()
     {
-        Instructor::unsetEventDispatcher();
-
+        // $role = Role::create([
+        //     'name' => 'instructor'
+        // ]);
+        // Instructor::unsetEventDispatcher();
+        $role = Role::firstOrCreate(['name' => 'instructor'], ['name' => 'instructor']);
+        // dd($role);
         $annie = factory(Instructor::class)->create([
             'qualifications' => 'CCIE Datacenter #51815 | JNCIP | CCSM | VCP',
             'title' => 'Co-founder'
         ]);
+        
         $annie->details->first_name = 'Aniebiet-Abasi';
         $annie->details->last_name = 'Udo';
         $annie->details->profile_pic = '/instructors/anie.png';
         $annie->details->status = 'active';
         $annie->details->phone_number = '+23408039093635';
+        $annie->details->assignRole($role);
         $annie->details->save();
+        // dd($annie->details);
 
         $daniel = factory(Instructor::class)->create([
             'qualifications' => 'CCIE Security #53707 | OSCP | CEH | CCNP (RS) |PCNSE7',
@@ -34,6 +42,7 @@ class InstructorSeeder extends Seeder
         $daniel->details->profile_pic = '/instructors/daniel.png';
         $daniel->details->status = 'active';
         $daniel->details->phone_number = '+23408039093635';
+        $daniel->details->assignRole($role);
         $daniel->details->save();
 
         $coker = factory(Instructor::class)->create([
@@ -45,6 +54,7 @@ class InstructorSeeder extends Seeder
         $coker->details->profile_pic = '/instructors/coker.png';
         $coker->details->status = 'active';
         $coker->details->phone_number = '+23408039093635';
+        $coker->details->assignRole($role);
         $coker->details->save();
 
         $odunaye = factory(Instructor::class)->create([
@@ -57,6 +67,7 @@ class InstructorSeeder extends Seeder
         $odunaye->details->profile_pic = '/instructors/odunaye.png';
         $odunaye->details->status = 'active';
         $odunaye->details->phone_number = '+23408039093635';
+        $odunaye->details->assignRole($role);
         $odunaye->details->save();
 
         $harpreet = factory(Instructor::class)->create([
@@ -67,8 +78,7 @@ class InstructorSeeder extends Seeder
         $harpreet->details->last_name = 'Singh';
         $harpreet->details->profile_pic = '/instructors/harpreet.png';
         $harpreet->details->status = 'active';
-        $harpreet->details->phone_number = '+23408039093635';
+        $harpreet->details->assignRole($role);
         $harpreet->details->save();
-
     }
 }

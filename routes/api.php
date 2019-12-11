@@ -34,10 +34,9 @@ Route::group(['middleware' => []], function () {
     Route::post('/newsletter/subscribe', 'NewsletterController@store');
     Route::post('/newsletter/unsubscribe', 'NewsletterController@destroy');
 
-    // CONTACT US
-    Route::post('/contactus', 'ContactUsController@store');
+    
 
     // BECOME AN INSTRUCTOR
-    Route::post('become-an-instructor', 'Auth\RegisterController@register');
+    Route::post('become-an-instructor', 'InstructorController@becomeAnInstructor');
 
 });

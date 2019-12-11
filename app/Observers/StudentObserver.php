@@ -2,7 +2,9 @@
 
 namespace App\Observers;
 
+use App\Events\NewUserRegistered;
 use App\Student;
+use Spatie\Permission\Models\Role;
 
 class StudentObserver
 {
@@ -14,7 +16,14 @@ class StudentObserver
      */
     public function created(Student $student)
     {
-       $student->details()->create(request()->all());
+       if (count(request()->all()))
+       {
+            $role = Role::firstOrCreate(['name' => 'student'], ['name' => 'student']);
+            $student->details()->create(request()->all());
+            $student->details->assignRole($role);
+
+            event(new NewUserRegistered($student->details));
+       }
     }
 
     /**
@@ -25,7 +34,7 @@ class StudentObserver
      */
     public function updated(Student $student)
     {
-        //
+        // dd('sdsd');
     }
 
     /**

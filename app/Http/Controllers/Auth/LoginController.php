@@ -71,7 +71,9 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         \Auth::logout();
-        return redirect()->to($request->return_url ?? config('app.frontend_url'));
+        \Cookie::forget('treten_session');
+        \Session::flush();
+        return redirect()->to($request->return_url ?? config('app.frontend_url').$request->redirect);
         // return redirect(property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout : '/');
     }
 
@@ -92,7 +94,8 @@ class LoginController extends Controller
         if ($request->wantsJson())
         {
             return response()->json([
-                'message' => 'Successfully logged you in!'
+                'message' => 'Successfully logged you in!',
+                'user' => auth()->user()
             ]);
         }
 

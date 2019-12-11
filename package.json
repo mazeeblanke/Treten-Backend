@@ -15,6 +15,9 @@
         "axios": "^0.19",
         "bootstrap": "^4.1.0",
         "cross-env": "^5.1",
+        "eslint": "^6.7.2",
+        "eslint-config-standard": "^14.1.0",
+        "eslint-plugin-react": "^7.17.0",
         "jquery": "^3.2",
         "laravel-mix": "^4.0.7",
         "lodash": "^4.17.13",
@@ -27,11 +30,14 @@
     },
     "dependencies": {
         "antd": "^3.21.2",
+        "google-libphonenumber": "^3.2.6",
         "heroku": "^7.33.3",
         "laravel-echo": "^1.6.1",
         "qs": "^6.9.0",
         "query-string": "^5.1.1",
         "react-phone-input-2": "^2.9.4",
-        "reactstrap": "^8.0.1"
+        "react-phone-number-input": "^2.5.1",
+        "reactstrap": "^8.0.1",
+        "simple-react-notifications": "^1.2.13"
     }
 }

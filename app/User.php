@@ -2,17 +2,18 @@
 
 namespace App;
 
-use App\Student;
-use App\Instructor;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Spatie\Permission\Traits\HasRoles;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class User extends Authenticatable
 {
     use Notifiable;
-
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -28,17 +29,22 @@ class User extends Authenticatable
         'provider',
         'provider_id',
         'email',
+        'title',
         'password',
         'status'
     ];
 
+    /**
+     * The attributes to include on every request
+     *
+     * @var array
+     */
     protected $appends = [
         'role',
         'name',
-        'gravatar'
+        'gravatar',
+        'friendly_created_at'
     ];
-
-    // protected $dateFormat = 'Y-m-d';
 
     /**
      * The attributes that should be hidden for arrays.
@@ -59,48 +65,131 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-
-    public function getGravatarAttribute ()
+    /**
+     * Get the full name of a user
+     *
+     * @return string
+     */
+    public function getNameAttribute(): string
     {
-        // dd($this->profile_pic);
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
+    /**
+     * Get the gravatar image of the user
+     *
+     * @return string
+     */
+    public function getGravatarAttribute(): string
+    {
         return  $this->profile_pic ?? Gravatar::get($this->email);
     }
 
-    public function userable ()
+    /**
+     * Get friendly version of the created at field
+     *
+     * @return string
+     */
+    public function getFriendlyCreatedAtAttribute(): string
+    {
+        return $this->created_at->format('d M Y');
+    }
+
+    /**
+     * Logic to determine the profile picture
+     *
+     * @param [type] $value
+     * @return string
+     */
+    public function getProfilePicAttribute($value)
+    {
+        if ($this->provider && preg_match("/^(http|https)/", $value)) return $value;
+        return $value
+            ? \Storage::url($value) . '?=' . time()
+            : \Gravatar::get($this->email) . '?=' . time();
+    }
+
+    /**
+     * Relationship to more user details
+     *
+     * @return MorphTo
+     */
+    public function userable(): MorphTo
     {
         return $this->morphTo();
     }
 
-    public function details ()
+    /**
+     * Determine the role of a user 
+     *
+     * @return string
+     */
+    public function getRoleAttribute(): string
+    {
+        // dd($this->roles->first()->name);
+        return optional($this->roles->first())->name ?? '';
+        // return auth()->check()
+        //     ? optional($this->roles->first())->name ?? ''
+        //     : '';
+    }
+
+    public function details()
     {
         return $this->userable();
     }
 
-    public function msuuid ()
+    public function userGroups()
     {
-        return $this->hasOne(Message::class, 'sender_id', 'id')->where('receiver_id', auth()->user()->id);
+        return $this->belongsToMany(UserGroup::class, 'user_group_allocations', 'user_id', 'user_group_id');
     }
 
-    public function mruuid ()
+     /**
+     * Relationship for message sender uuid
+     *
+     * @return HasOne
+     */
+    public function msuuid(): HasOne
     {
-        return $this->hasOne(Message::class, 'receiver_id', 'id')->where('sender_id', auth()->user()->id);
+        return $this
+            ->hasOne(Message::class, 'sender_id', 'id')
+            ->where(function ($query) {
+                if (auth()->check())
+                {
+                    return $query->where('receiver_id', auth()->user()->id);
+                }
+                return $query;
+            });
     }
 
-    public function getProfilePicAttribute($value)
+    /**
+     * Relationship fo message receiver uuid
+     *
+     * @return HasOne
+     */
+    public function mruuid(): HasOne
     {
-        if ($this->provider && preg_match("/^(http|https)/", $value)) return $value;
-
-        return $value
-            ? \Storage::url($value).'?='.time()
-            : \Gravatar::get($this->email).'?='.time();
+        return $this
+            ->hasOne(Message::class, 'receiver_id', 'id')
+            ->where(function ($query) {
+                if (auth()->check())
+                {
+                    return $query->where('sender_id', auth()->user()->id);
+                }
+                return $query;
+            });
     }
 
-
-    public static function toCSV($type)
+    /**
+     * Get a CSV array format of the user
+     *
+     * @param [type] $type
+     * @return array
+     */
+    public static function toCSV($type): array
     {
-        $type = $type === 'instructors' ? Instructor::class : Student::class;
-        $users = static::where('userable_type', $type)->get()->map(function ($user) {
-            // dd($user->created_at->format('Y-m-d'));
+        $users = static::whereHas('roles', function ($query) use ($type) {
+            return $query->where('roles.name', \Str::singular($type));
+        })->get()->map(function ($user) {
             return [
                 $user->name,
                 $user->email,
@@ -111,21 +200,14 @@ class User extends Authenticatable
         });
 
         return array_merge([
-            ['Name', 'Email Address', 'Phone Number', 'Status', 'Sign up date and time']
+            [
+                'Name', 
+                'Status', 
+                'Phone Number', 
+                'Email Address',
+                'Sign up date and time'
+            ]
         ], $users->toArray());
-    }
-
-    public function getNameAttribute()
-    {
-        return $this->first_name .' '. $this->last_name;
-    }
-
-    public function getRoleAttribute()
-    {
-        // return 'instructor';
-        return $this->isAnInstructor()
-            ? 'instructor'
-            : 'admin';
     }
 
     /**
@@ -134,24 +216,62 @@ class User extends Authenticatable
      * @param  string  $token
      * @return void
      */
-    public function sendPasswordResetNotification($token)
+    public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPasswordNotification($token));
     }
 
-
-    public static function register ($data)
+    /**
+     * Register a new user
+     *
+     * @param [type] $data
+     * @return void
+     */
+    public static function register($data): void
     {
-        $user = static::create($data);
+        static::create($data);
     }
 
-    public function isAnInstructor ()
+    /**
+     * Check if a uer is an instructor
+     *
+     * @return boolean
+     */
+    public function isAnInstructor(): bool
     {
-        return $this->userable_type === Instructor::class;
+        // return $this->userable_type === Instructor::class;
+        return $this->roles->first()->name === 'instructor';
     }
-    
-    public function isAStudent ()
+
+    /**
+     * Check if a user is a student
+     *
+     * @return boolean
+     */
+    public function isAStudent(): bool
     {
-        return $this->userable_type === Student::class;
+        // return $this->userable_type === Student::class;
+        return $this->roles->first()->name === 'student';
+    }
+
+    /**
+     * Check if a user is an admin
+     *
+     * @return boolean
+     */
+    public function isAnAdmin(): bool
+    {
+        // return $this->userable_type === Student::class;
+        return $this->roles->first()->name === 'admin';
+    }
+
+    /**
+     * Check if a user is an admin
+     *
+     * @return boolean
+     */
+    public function isNotActive(): bool
+    {
+        return $this->status != 'active';
     }
 }

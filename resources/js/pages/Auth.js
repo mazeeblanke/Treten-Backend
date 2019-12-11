@@ -1,53 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Tabs, Button, message } from 'antd';
+import { Tabs, Button } from 'antd';
 import withAuthLayout from '../layouts/withAuthLayout';
 import RegisterForm from '../components/auth/RegisterForm';
 import LoginForm from '../components/auth/LoginForm';
 import ReactDOM from 'react-dom';
+import queryString from 'query-string';
 
 const { TabPane } = Tabs;
 
 class Auth extends Component {
   constructor(props) {
     super(props);
-
-    // message.config({
-    //   maxCount: 1,
-    // });
-  }
-
-  componentWillMount() {
-
-  }
-
-  componentDidMount() {
-    message.config({
-      maxCount: 1,
-    });
-  }
-
-  componentWillReceiveProps(nextProps) {
-
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return true
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-
-  }
-
-  componentWillUnmount() {
-
   }
 
   render() {
+    const parsed = queryString.parse(location.search)
+    const redirect = (parsed || {}).redirect
     return (
       <section className="auth has-grey-bg has-min-full-vh pb-5">
         <div className="container pt-5 has-full-height">
@@ -55,8 +24,6 @@ class Auth extends Component {
             <div className="col-md-5 auth__wrapper">
               <div className="auth__container">
                 <Tabs className="has-full-height" type="card">
-
-
                   <TabPane className="has-full-height register pr-7 pl-7" tab="Register" key="register">
                     <h4 className="register__main-text text-center mt-2">Register to get your student account</h4>
                     <p className="register__sub-text text-center">
@@ -71,7 +38,7 @@ class Auth extends Component {
                     <div className="row justify-content-md-between">
                       <div className="col-md-6 mb-3">
                         <Button
-                          href="auth/linkedin"
+                          href={`auth/linkedin${location.search}`}
                           type="primary"
                           htmlType="submit"
                           className="linkedin-btn has-full-width">
@@ -81,7 +48,7 @@ class Auth extends Component {
                       </div>
                       <div className="col-md-6 mb-3">
                         <Button
-                          href="auth/facebook"
+                          href={`auth/facebook${location.search}`}
                           type="primary"
                           htmlType="submit"
                           className="facebook-btn has-full-width">

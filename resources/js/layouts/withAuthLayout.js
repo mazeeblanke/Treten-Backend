@@ -1,18 +1,10 @@
 import React, { Component } from 'react';
 import AlternateNavbar from '../components/shared/AlternateNavbar';
+import 'simple-react-notifications/dist/index.css'
+import 'react-phone-number-input/style.css'
 
 export default (Page) => {
   return class extends Component {
-
-    // static async getInitialProps (ctx) {
-    //   let pageProps = {}
-    //   if (Page.getInitialProps) {
-    //     pageProps = await Page.getInitialProps(ctx);
-    //   }
-
-    //   return { ...pageProps };
-    // }
-
     render () {
       return (
         <div id="treten">
