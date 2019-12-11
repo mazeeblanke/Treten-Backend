@@ -102,7 +102,7 @@ class CourseController extends Controller
                     'message' => 'Unable to find user specified',
                     'data' => []
                 ]);
-            } else {
+            } else if ($authorId instanceof User) {
                 $authorId = $authorId->id;
             }
             $sub = Course::select(
