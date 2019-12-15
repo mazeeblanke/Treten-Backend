@@ -149,6 +149,28 @@ class Course extends Model
     {
         return $this->categories->first();
     }
+
+    public function scopeFilter ($query, $filters)
+    {
+        $filters->apply($query);
+    }
+
+    public function scopeUniqueCoursesWithBatches ($query)
+    {
+        $query->select(
+            \DB::raw('max(course_batch_author.id) as cba_id'),
+                'courses.id', 
+                'courses.title',
+                'courses.created_at',
+                'courses.banner_image',
+                'course_batch_author.course_id'
+            )
+            ->join(
+                'course_batch_author', 
+                'course_batch_author.course_id',
+                'courses.id'
+            );
+    }
     
     // public function batches()
     // {

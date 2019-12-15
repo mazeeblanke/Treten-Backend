@@ -10,6 +10,7 @@ use App\Transaction;
 use App\CourseEnrollment;
 use App\CourseBatchAuthor;
 use Illuminate\Http\Request;
+use App\Filters\CourseCollectionFilters;
 use App\Http\Resources\CourseCollection;
 use App\Http\Requests\CreateCourseRequest;
 use App\Http\Resources\Course as CourseResource;
@@ -21,244 +22,27 @@ class CourseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, CourseCollectionFilters $filters)
     {
         //validate notassigned, must be 1 or 0
         //validate withBatches, must be 1 or 0
         //validate ninstructor, must be numeric and also check that the requester has the right permission to access the information
         //if instructor id then use permissins,
-        $pageSize = $request->pageSize ?? 8;
-        $page = $request->page ?? 1;
-        $q = $request->q ?? '';
-        $isPublished = isset($request->isPublished) ? (int) $request->isPublished : null;
-        $enrolled = isset($request->enrolled) ? (int) $request->enrolled : null;
-        $category = $request->category;
-        $courseId = (int) $request->courseId;
-        $authorId = $request->authorId;
-        $categoryId = isset($request->categoryId) ? (int) $request->categoryId : null;
-        $minimal = isset($request->minimal) ? (int) $request->minimal : null;
-        $notAssigned = isset($request->notAssigned) ? (int) $request->notAssigned :  null;
-        $hasInstructor = isset($request->hasInstructor) ? (int) $request->hasInstructor :  null;
-        $sort = in_array($request->sort, ['asc', 'desc'])
-            ? $request->sort
-            : 'desc';
+        // isPublished must be 0 or 1
 
-        $builder = Course::with(['author'])->where(function ($query) use ($q) {
-            if ($q) {
-                return $query->where('courses.title', 'like', '%' . $q . '%');
-            }
-            return $query;
-        });
-
-        if ($isPublished === 0 || $isPublished === 1) {
-            $builder = $builder->whereIsPublished($isPublished);
-        }
-
-        if (!is_null($category) && $category !== 'all' )
-        {
-            $builder = $builder->whereHas('categories', function($query) use ($category){
-                return $query->where('course_categories.name', $category);
-            });
-        }
-
-        if (!is_null($categoryId))
-        {
-            $builder = $builder->whereHas('categories', function($query) use ($categoryId){
-                return $query->where('course_categories.id', $categoryId);
-            });
-        }
-
-        if (!\is_null($hasInstructor))
-        {
-            $builder = $builder->with(['instructors' => function($query) {
-                return $query->where(function ($query) {
-                    $query->orWhere('timetable', '!=', 'a:0:{}')->orWhere('timetable', '!=', null);
-                })->where('users.userable_type', '!=', null);
-            }])->whereHas('instructors', function ($query) {
-                return $query->where(function ($query) {
-                    $query->orWhere('timetable', '!=', 'a:0:{}')->orWhere('timetable', '!=', null);
-                })->where('users.userable_type', '!=', null);
-            });
-        }
- 
-        if (!\is_null($authorId)) 
-        {
-            // dd(is_numeric($authorId));
-            if (!is_numeric($authorId)) {
-                $names = collect(explode(' ', $authorId))->filter(function ($q) {
-                    return $q;
-                })
-                ->values()
-                ->toArray();
-                $authorId = User::where(function ($q) use ($names) {
-                    $q->orWhere('first_name', $names[0] ?? null)
-                        ->orWhere('last_name', $names[1] ?? null)
-                        ->orWhere('first_name', $names[1] ?? null)
-                      ->orWhere('last_name', $names[0] ?? null);
-                })->first();
-            }
-            if (!$authorId) {
-                return response()->json([
-                    'message' => 'Unable to find user specified',
-                    'data' => []
-                ]);
-            } else if ($authorId instanceof User) {
-                $authorId = $authorId->id;
-            }
-            $sub = Course::select(
-                \DB::raw('max(course_batch_author.id) as cba_id'),
-                    'courses.id', 
-                    'courses.title',
-                    'courses.created_at',
-                    'courses.banner_image',
-                    'course_batch_author.course_id'
-                )
-                ->join(
-                    'course_batch_author', 
-                    'course_batch_author.course_id',
-                    'courses.id'
-                );
-
-                if (!\is_null($notAssigned)) 
-                {
-                    // $action = '=';
-                    if ($notAssigned === 1) {
-                        // $action = '!=';
-                        $ids = CourseBatchAuthor::where('author_id', $authorId)
-                            ->get()
-                            ->pluck('course_id')
-                            ->toArray();
-                        $sub = $sub->groupBy(
-                            'course_batch_author.course_id'
-                        )->whereNotIn('course_batch_author.course_id', $ids);
-                    } 
-                    if ($notAssigned === 0) {
-                        $sub = $sub->groupBy(
-                            'course_batch_author.author_id',
-                            'course_batch_author.course_id'
-                        )->orderBy('cba_id', $sort);
-                        $sub = $sub->where('course_batch_author.author_id', $authorId);
-                    } 
-                } else {
-                    $sub = $sub->groupBy('course_batch_author.course_id')
-                    ->where('course_batch_author.author_id', $authorId);
-                }  
-                
-                // $sub->dd();
-                // dd($sub->get()->pluck('course_id'));
-            $courseIds = $sub->get()->pluck('id')->toArray();    
-            // dd($courseIds);
-
-            $builder = $builder->whereIn('id', $courseIds);
-                // ->joinSub($sub, 'c', function ($join) {
-                //     $join->on('courses.id', '=', 'c.course_id');
-                //     // $join->on('courses.id', '=', 'c.id');
-                // });
-                
-            // $builder = $builder
-            //     ->join(
-            //         'course_batch_author', 
-            //         'course_batch_author.course_id', 
-            //         'courses.id'
-            //     )
-            //     ->select(
-            //         \DB::raw('max(course_batch_author.id) as cba_id'),
-            //         'courses.id', 
-            //         'courses.title',
-            //         'courses.created_at',
-            //         'courses.banner_image',
-            //         'course_batch_author.course_id'
-            //     );
-
-            // if (!\is_null($notAssigned)) 
-            // {
-            //     $action = '=';
-            //     if ($notAssigned === 1) {
-            //         $action = '!=';
-            //         $builder = $builder->groupBy(
-            //             'course_batch_author.course_id'
-            //         );
-            //     } 
-            //     if ($notAssigned === 0) {
-            //         $builder = $builder->groupBy(
-            //             'course_batch_author.author_id',
-            //             'course_batch_author.course_id'
-            //         )->orderBy('cba_id', $sort);
-            //     } 
-            //     $builder = $builder->where('course_batch_author.author_id', $action, $authorId);
-            // } else {
-            //     $builder = $builder->groupBy('course_batch_author.course_id');
-            // }
-            
-            // if (!\is_null($withBatch))
-            // {
-            //     $builder = $builder
-            //         ->select('courses.*')
-            //         ->join(
-            //             'course_batches', 
-            //             'course_batches.id', 
-            //             '=', 
-            //             'course_batch_instructor.course_batch_id'
-            //         );
-            // }    
-        }
-
-        if (!\is_null($enrolled) && auth()->check())
-        {
-            $builder = $builder->whereHas('enrollments', function ($query) {
-                auth()->check()
-                    ? $query->whereUserId(auth()->user()->id)->whereActive(1)
-                    : $query;
-            })
-            ->join('course_enrollments', 'course_enrollments.course_id', 'courses.id')
-            ->where('course_enrollments.user_id', auth()->user()->id)
-            ->join('course_batches', 'course_batches.id', 'course_enrollments.course_batch_id')
-            ->select(
-                'courses.*', 
-                'course_batches.start_date',
-                'course_batches.batch_name',
-                'course_batches.mode_of_delivery',
-                'course_batches.end_date',
-                'course_batches.price',
-                'course_batches.course_id',
-                'course_batches.class_is_full'
-            );
-        }
-
-        // if (!\is_null($minimal) && $minimal === 0)
-        // {
-        //     $builder = $builder->select('courses.*', \DB::raw('max(course_batch_instructor.id) as cbi_id'));
-        // }
-        
-
-
-        // if (!\is_null($notAssigned) && auth()->check()) {
-        //     // $builder = $builder->whereHas('instructors', function(Builder $query) use ($authorId) {
-        //     //     $query->where('instructor_id', '!=', $authorId);
-        //     // });
-        //     $action = $notAssigned === 0 ? '=' : '!=';
-        //     $builder = $builder->join('course_batch_author as cb', 'cb.course_id', '=', 'courses.id')
-        //         ->where('cb.author_id', $action, auth()->user()->id)
-        //         ->select('title', 'courses.created_at', 'courses.id')
-        //         ->groupBy('title', 'courses.created_at', 'courses.id');
-        // }
-
-        $courses = $builder
-            ->orderBy('courses.created_at', $sort)
-            ->paginate($pageSize, '*', 'page', $page);
-
-
-        return response()->json(new CourseCollection($courses));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return response()->json(
+            new CourseCollection(
+                Course::with(['author'])
+                    ->filter($filters)
+                    ->orderBy('courses.created_at', $request->sort ?? 'desc')
+                    ->paginate(
+                        $request->pageSize ?? 8, 
+                        '*', 
+                        'page', 
+                        $request->page ?? 1
+                    )
+            )
+        );
     }
 
     public function popular(Request $request)
@@ -333,7 +117,6 @@ class CourseController extends Controller
      */
     public function show(Request $request, $course)
     {
-        // \Debugbar::enable();
         $courseSlugSegments = explode('_', $course);
         $courseId = (int) $courseSlugSegments[count($courseSlugSegments) - 1];
         $enrolled = (int) $request->enrolled ?? 0;
@@ -380,10 +163,6 @@ class CourseController extends Controller
 
             $builder = $builder->with([
                 'resources',
-                // 'instructors' => function($query) {
-                //     return $query->where(function($query) {
-                //         return $query->groupBy('author_id');
-                //     })->with('userable')->where('users.userable_type', '!=', null); },
                 'courseReviews' => function ($query) {
                     return $query->whereEnrolleeId(auth()->user()->id);
                 },
@@ -465,9 +244,7 @@ class CourseController extends Controller
         
         $course =  $builder->where('courses.id', $courseId)
             // ->whereTitle($courseTitle)
-            ->first();
-
-        // dd($course);    
+            ->first();  
 
         if (auth()->check() && auth()->user()->isAStudent()) {
             // return details of user transaction in the database (regardless of status) if loggedin

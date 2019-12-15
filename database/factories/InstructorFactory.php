@@ -23,7 +23,9 @@ $factory->define(Instructor::class, function (Faker $faker) {
 
 $factory->afterCreating(Instructor::class, function($instructor, $faker) {
     $role = Role::firstOrCreate(['name' => 'instructor'], ['name' => 'instructor']);
-    $user = factory(User::class)->make();
+    $user = factory(User::class)->make([
+        'first_name' => $faker->firstName
+    ]);
     // $user->unsetEventDispatcher();
     $user->assignRole($role);
     $instructor->details()->save($user);

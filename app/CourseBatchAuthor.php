@@ -51,4 +51,12 @@ class CourseBatchAuthor extends Model
     {
         $this->attributes['timetable'] = serialize($value);
     }
+
+    public static function getAuthorCourseAllocationIds ($authorId)
+    {
+        return static::where('author_id', $authorId)
+            ->get()
+            ->pluck('course_id')
+            ->toArray();
+    }
 }

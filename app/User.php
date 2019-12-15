@@ -179,6 +179,28 @@ class User extends Authenticatable
             });
     }
 
+    public function scopeHasCourseTimetable ($query)
+    {
+        return $query
+            ->where(function ($query) {
+                $query
+                    ->orWhere('timetable', '!=', 'a:0:{}')
+                    ->orWhere('timetable', '!=', null);
+            })
+            ->where('users.userable_type', '!=', null);
+    }
+
+    public function scopeDoesntHaveCourseTimetable ($query)
+    {
+        return $query
+            ->where(function ($query) {
+                $query
+                    ->orWhere('timetable', 'a:0:{}')
+                    ->orWhere('timetable', null);
+            })
+            ->where('users.userable_type', null);
+    }
+
     /**
      * Get a CSV array format of the user
      *
