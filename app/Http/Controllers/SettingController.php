@@ -84,7 +84,9 @@ class SettingController extends Controller
     public function update(Request $request, Setting $setting)
     {
         if ($request->has('popularCourses')) {
-           $setting = Setting::whereSettingName('popularCourses')->first();
+           $setting = Setting::firstOrCreate([
+               'setting_name' => 'popularCourses'
+           ]);
         //    dd();
            $encoded = json_encode($request->popularCourses);
            $setting->update(['setting_value' => serialize($encoded)]);

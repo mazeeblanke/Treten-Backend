@@ -20,13 +20,13 @@ class CoursePath extends Model
     {
         $query
             ->with(['courses' => function ($q) {
-                $q->whereIsPublished(1)->whereHas('instructors', function ($q) {
+                $q->whereHas('instructors', function ($q) {
                     return $q->hasCourseTimetable();
                 })
                 ->orderBy('course_path_position');
             }])
             ->whereHas('courses', function ($q) {
-                $q->whereIsPublished(1)->whereHas('instructors', function ($q) {
+                $q->whereHas('instructors', function ($q) {
                     return $q->hasCourseTimetable();
                 })
                 ->where('courses.is_published', 1);
