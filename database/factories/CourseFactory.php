@@ -26,6 +26,7 @@ $factory->define(Course::class, function (Faker $faker) {
             'courses/course5.png',
         ]),
         'duration' => 10,
+        "video_id" => '',
         'author_id' => 1,
         'course_path_id' => factory(CoursePath::class)->create()->id,
         'course_path_position' => 1,

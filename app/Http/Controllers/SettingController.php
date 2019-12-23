@@ -17,7 +17,10 @@ class SettingController extends Controller
     public function index()
     {
         return new SettingCollection(Setting::all()->map(function($setting) {
-            if ($setting->setting_name === 'popularCourses') {
+            if (
+                $setting->setting_name === 'popularCourses' &&
+                $setting->setting_value
+            ) {
                 $ids = unserialize($setting->setting_value);
                 $setting->setting_value =  [
                     "ids" => json_decode($ids, false),

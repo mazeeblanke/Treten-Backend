@@ -25,13 +25,15 @@ class CourseTest extends TestCase
     protected $batches = [];
     protected $students = [];
     protected $categories = [];
+    protected $coursePaths = [];
     protected $instructors = [];
 
     protected function setUp (): void
     {
         parent::setUp();
-      
+
         $this->createCategories()
+            ->createCoursePaths()
             ->setupAdmin()
             ->setupInstructors()
             ->setupStudents()
@@ -41,7 +43,19 @@ class CourseTest extends TestCase
             ->enrollAStudent();
     }
 
-    public function testCanCreateaCourse(): void
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->courses = [];
+        $this->batches = [];
+        $this->students = [];
+        $this->categories = [];
+        $this->coursePaths = [];
+        $this->instructors = [];
+    }
+
+    public function testCanCreateACourse(): void
     {
         $faqs = '[{"question":"DO YOU OFFER CCIE COURSES IN NIGERIA?","answer":" Yes we do. Please give us a call to dicsuss further."},{"question":"CAN I JOIN THE CLASSES REMOTELY","answer":"Yes you can. You can enjoy from the comfort of your home or office."},{"question":"HOW ARE COURSES TAUGHT?","answer":" Classes fully adhere to international syllables and guidelines set by the certifications providers."},{"question":"DO I GET A CERTIFICATE AFTER PARTICIPATION IN THE TRAINING?","answer":"The trainer will hand out a certificate on the last day of the training if it has been completed (at least 75% attendance)."}]';
 
@@ -67,6 +81,7 @@ class CourseTest extends TestCase
             'bannerImage' => UploadedFile::fake()->image('test.png'),
             'category' => 'new category',
             'duration' => 10,
+            'videoId' => 'hjdjhdferu7',
             'coursePath' => $ccna->id,
             'coursePathPosition' => 1,
             'modules' => $modules,
@@ -87,15 +102,16 @@ class CourseTest extends TestCase
         ]);
 
         $this->assertDatabaseHas('courses', [
-            'title' => $payload['title'],
-            'description' => $payload['description'],
             'course_path_position' => 1,
+            'title' => $payload['title'],
+            'video_id' => $payload['videoId'],
+            'description' => $payload['description'],
         ]);
 
         $response->assertJsonFragment([
             'message' => 'Successfully fetched course',
         ]);
-        
+
         $response->assertStatus(200);
     }
 
@@ -132,7 +148,7 @@ class CourseTest extends TestCase
         $response->assertSee($course->title);
         $response->assertSee($course->description);
         $response->assertStatus(200);
-        
+
     }
 
     public function testCanFetchAllCourses (): void
@@ -218,7 +234,7 @@ class CourseTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testCanFetchAndFilterCoursesByPublishedStatus (): void 
+    public function testCanFetchAndFilterCoursesByPublishedStatus (): void
     {
         $page = 1;
 
@@ -249,7 +265,7 @@ class CourseTest extends TestCase
             'api/courses',
             [
                 "page" => 1,
-                "hasInstructor" => 1
+                "hasInstructor" => "1"
             ]
         );
 
@@ -283,6 +299,28 @@ class CourseTest extends TestCase
         $response->assertSee($this->courses["course4"]->title);
         $response->assertSee($this->courses["course5"]->title);
         $response->assertJsonCount(3, 'data');
+        $response->assertStatus(200);
+    }
+
+    public function testCanFetchAndFilterCoursesByHasInstructorWhenSuppliedWrongValue (): void
+    {
+
+        $response = $this->json(
+            'GET',
+            'api/courses',
+            [
+                "page" => 1,
+                "hasInstructor" => 5
+            ]
+        );
+
+        $this->assertCourseJsonStructure($response);
+        $response->assertSee($this->courses["course1"]->title);
+        $response->assertSee($this->courses["course2"]->title);
+        $response->assertSee($this->courses["course3"]->title);
+        $response->assertSee($this->courses["course4"]->title);
+        $response->assertSee($this->courses["course5"]->title);
+        $response->assertJsonCount(5, 'data');
         $response->assertStatus(200);
     }
 
@@ -408,7 +446,7 @@ class CourseTest extends TestCase
     public function testCanFetchAndFilterCoursesByEnrolledWhenTrueWithLoggedInUser (): void
     {
         $page = 1;
- 
+
         $response = $this
             ->actingAs($this->students['mazino']->details)
             ->json(
@@ -434,7 +472,7 @@ class CourseTest extends TestCase
     public function testCanFetchAndFilterCoursesAssignedToAnInstructor (): void
     {
         $page = 1;
- 
+
         $response = $this
             ->actingAs($this->students['mazino']->details)
             ->json(
@@ -461,7 +499,7 @@ class CourseTest extends TestCase
     public function testCanFetchAndFilterCoursesNotAssignedToAnInstructor (): void
     {
         $page = 1;
- 
+
         $response = $this
             ->actingAs($this->students['mazino']->details)
             ->json(
@@ -478,11 +516,33 @@ class CourseTest extends TestCase
         $response->assertDontSee($this->courses["course1"]->title);
         $response->assertSee($this->courses["course2"]->title);
         $response->assertSee($this->courses["course3"]->title);
-        
+
         //dont see these two because they have not been even assigned a batch on the `course_batch_author` table
         $response->assertDontSee($this->courses["course4"]->title);
         $response->assertDontSee($this->courses["course5"]->title);
         $response->assertJsonCount(2, 'data');
+        $response->assertStatus(200);
+
+    }
+
+    public function testCanFetchCoursesByCategories (): void
+    {
+        $response = $this
+            ->actingAs($this->students['mazino']->details)
+            ->json(
+                'GET',
+                'api/courses-by-categories'
+            );
+
+        $response->assertJsonStructure([
+            "message",
+            "data"
+        ]);
+        $response->assertSee($this->courses["course1"]->title);
+        $response->assertSee($this->courses["course2"]->title);
+        $response->assertDontSee($this->courses["course3"]->title);
+        $response->assertDontSee($this->courses["course4"]->title);
+        $response->assertDontSee($this->courses["course5"]->title);
         $response->assertStatus(200);
 
     }
@@ -506,6 +566,7 @@ class CourseTest extends TestCase
                 'category',
                 'duration',
                 'avgRating',
+                'videoId',
                 'isPublished',
                 'description',
                 'publishedAt',
@@ -549,10 +610,39 @@ class CourseTest extends TestCase
         return $this;
     }
 
+    private function createCoursePaths ()
+    {
+        $this->coursePaths['coursePath 1'] = factory(CoursePath::class)->create([
+            'name' => 'Cisco Service Provider'
+        ]);
+
+        $this->coursePaths['coursePath 2'] = factory(CoursePath::class)->create([
+            'name' => 'Cisco Security'
+        ]);
+
+        $this->coursePaths['coursePath 3'] = factory(CoursePath::class)->create([
+            'name' => 'Cisco R&S'
+        ]);
+
+        $this->coursePaths['coursePath 4'] = factory(CoursePath::class)->create([
+            'name' => 'Cisco Collaboration'
+        ]);
+
+        $this->coursePaths['coursePath 5'] = factory(CoursePath::class)->create([
+            'name' => 'Cisco Datacenter'
+        ]);
+
+        $this->coursePaths['coursePath 6'] = factory(CoursePath::class)->create([
+            'name' => 'Firewall Expert'
+        ]);
+
+        return $this;
+    }
+
     private function setupAdmin ()
     {
         $roleAdmin = Role::firstOrCreate(
-            ['name' => 'admin'], 
+            ['name' => 'admin'],
             ['name' => 'admin']
         );
 
@@ -599,7 +689,8 @@ class CourseTest extends TestCase
         {
             $this->courses["course{$course}"] = factory(Course::class)->create([
                 "is_published" => $key != 4 ? 1 : 0,
-                "title" => "course {$course}", 
+                "title" => "course {$course}",
+                "course_path_id" => $this->coursePaths["coursePath {$course}"]->id,
                 "created_at" => now()->subDays($course)
             ]);
 
@@ -655,7 +746,7 @@ class CourseTest extends TestCase
                 'course_batch_id' => $this->batches["batch{$key}"]->id,
                 'author_id' => $instructorIds[$courseId - 1],
             ];
-            
+
             if (($courseId - 1) === 2)
             {
                 $data = array_merge($data, [

@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use App\Filters\CourseCollectionFilters;
 use App\Http\Resources\CourseCollection;
 use App\Http\Requests\CreateCourseRequest;
+use App\Http\Requests\GetCourseRequest;
 use App\Http\Resources\Course as CourseResource;
 
 class CourseController extends Controller
@@ -20,25 +21,21 @@ class CourseController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @author mazino ukah <ewomaukah@yahoo.com>
+     *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request, CourseCollectionFilters $filters)
+    public function index(GetCourseRequest $request, CourseCollectionFilters $filters)
     {
-        //validate notassigned, must be 1 or 0
-        //validate withBatches, must be 1 or 0
-        //validate ninstructor, must be numeric and also check that the requester has the right permission to access the information
-        //if instructor id then use permissins,
-        // isPublished must be 0 or 1
-
         return response()->json(
             new CourseCollection(
                 Course::with(['author'])
-                    ->filter($filters)
-                    ->orderBy('courses.created_at', $request->sort ?? 'desc')
+                    ->filterUsing($filters)
+                    ->orderByLatest()
                     ->paginate(
-                        $request->pageSize ?? 8, 
-                        '*', 
-                        'page', 
+                        $request->pageSize ?? 8,
+                        '*',
+                        'page',
                         $request->page ?? 1
                     )
             )
@@ -55,28 +52,22 @@ class CourseController extends Controller
         $popularCourseIds = unserialize($popularCoursesSetting->setting_value);
 
         $courses = Course::whereIn('id', array_values(json_decode($popularCourseIds, true)))->get();
-        
+
         return response()->json(new CourseCollection($courses));
     }
 
     public function groupByCategories()
     {
         $courses = cache()->remember("courses.categories.group", now()->addMinutes(15), function () {
-            return Course::with('categories')
-                ->whereHas('categories', function ($query) {
-                    return $query->where(function ($query) {
-                        return $query
-                            ->orWhere('name', 'associate')
-                            ->orWhere('name', 'expert')
-                            ->orWhere('name', 'professional');
-                    });
-                })
+            return Course::mainCategories()
+                ->whereIsPublished(1)
+                ->hasInstructors()
                 ->get()
                 ->groupBy(function ($course) {
                     return $course->categories()->first()->name;
                 })
                 ->map(function($courseGroup) {
-                    return $courseGroup 
+                    return $courseGroup
                         ->map(function ($course) {
                             return [
                                 'title' => $course->title,
@@ -127,26 +118,26 @@ class CourseController extends Controller
         if (!Course::whereId($courseId)->exists())
         {
             return response()->json([
-               'message' => 'Unable to find the requested course' 
+               'message' => 'Unable to find the requested course'
             ], 404);
         }
 
         $builder= Course::with([
-            'author', 
-            'coursePath', 
+            'author',
+            'coursePath',
         ]);
 
         if ($enrolled === 1)
         {
             if (!auth()->check()) {
                 return response()->json([
-                    'message' => 'Must be logged in!' 
+                    'message' => 'Must be logged in!'
                 ], 422);
             }
 
             if (auth()->user()->role != 'student') {
                 return response()->json([
-                    'message' => 'Must be a student!' 
+                    'message' => 'Must be a student!'
                 ], 422);
             }
 
@@ -157,7 +148,7 @@ class CourseController extends Controller
 
             if (!$studentIsEnrolled) {
                 return response()->json([
-                    'message' => 'You have not enrolled or this course' 
+                    'message' => 'You have not enrolled or this course'
                 ], 422);
             }
 
@@ -214,11 +205,11 @@ class CourseController extends Controller
                                 return $query->where('course_batch_author.author_id', auth()->user()->id);
                             }
                             if (auth()->check() && auth()->user()->isAStudent()) {
-    
+
                                 // TODO: include check to ensure that only batches that are not filled up show up here
                                 return $query->join(
-                                    'course_batch_author', 
-                                    'course_batch_author.course_batch_id', 
+                                    'course_batch_author',
+                                    'course_batch_author.course_batch_id',
                                     'course_batches.id'
                                 )
                                 // ->where('course_batch_author.timetable', '!=', 'a:0:{}')
@@ -231,9 +222,9 @@ class CourseController extends Controller
                         })
                         ->orderBy('course_batches.id', 'desc');
                     // return $query->join(
-                    //     'course_batch_instructor', 
-                    //     'course_batch_instructor.course_batch_id', 
-                    //     '=', 
+                    //     'course_batch_instructor',
+                    //     'course_batch_instructor.course_batch_id',
+                    //     '=',
                     //     'course_batches.id'
                     // )
                     // ->where('course_batch_instructor.instructor_id', auth()->user()->userable_id)
@@ -241,10 +232,10 @@ class CourseController extends Controller
                 }
             ]);
         }
-        
+
         $course =  $builder->where('courses.id', $courseId)
             // ->whereTitle($courseTitle)
-            ->first();  
+            ->first();
 
         if (auth()->check() && auth()->user()->isAStudent()) {
             // return details of user transaction in the database (regardless of status) if loggedin
@@ -282,9 +273,9 @@ class CourseController extends Controller
                 $course->enrollment = session()->get('enrollments.'.$course->id);
             } else {
                 $course->enrollment = [];
-            }   
-        }   
-        
+            }
+        }
+
         if ($enrolled !== 1)
         {
             $course->availableModesOfDelivery = $course
@@ -316,7 +307,7 @@ class CourseController extends Controller
         return response()->json([
             'message' => 'Successfully fetched course',
             'data' => new CourseResource($course),
-        ], 200);    
+        ], 200);
     }
 
     /**
@@ -343,7 +334,7 @@ class CourseController extends Controller
         return response()->json([
             'message' => 'Successfully fetched course',
             'data' => new CourseResource($course)
-        ], 200); 
+        ], 200);
     }
 
     /**

@@ -18,20 +18,14 @@ class Course extends JsonResource
     public function toArray($request)
     {
 
-        $instructor = method_exists($this->whenLoaded('instructors'), 'first')
-            ? new UserResource($this->instructors->first())
-            : null;
+        // $instructor = method_exists($this->whenLoaded('instructors'), 'first')
+        //     ? new UserResource($this->instructors->first())
+        //     : null;
 
         $courseReview = method_exists($this->whenLoaded('courseReviews'), 'first')
             ? new CourseReview($this->courseReviews->first())
             : [];
 
-        // $instructorReview = method_exists($this->whenLoaded('instructorReviews'), 'first') && $this->instructorReviews->first()
-        //     ? new InstructorReview($this->instructorReviews->first())
-        //     : [
-        //         'rating' => 0,
-        //         'reviewText' => ''
-        //     ];
         $instructorReviews = $this->relationLoaded('instructorReviews')
             ? (InstructorReview::collection($this->instructorReviews))->groupBy('author_id')
             : [];
@@ -40,50 +34,46 @@ class Course extends JsonResource
             $relatedCourses = \App\Course::where('id', '!=', $this->id)->whereHas('categories', function ($query) {
                 $query->where('course_categories.name', optional($this->category)->name);
             })->whereIsPublished(1)->whereHas('instructors')->inRandomOrder()->limit(5)->get();
-            // if (count($relatedCourses) === 1) {
-            //     $relatedCourses = [$relatedCourses];
-            // }
-        }    
+        }
 
         return [
-            'id' => $this->when($this->id, $this->id),
-            'slug' => $this->when($this->slug, $this->slug),
-            'coursePathPosition' => $this->when($this->course_path_position, $this->course_path_position),
-            'coursePathId' => $this->when($this->course_path_id, $this->course_path_id),
-            'isPublished' => $this->when($this->is_published >= 0, $this->is_published),
-            'publishedAt' => $this->published_at,
-            'institution' => $this->when($this->institution, $this->institution),
-            'certificationBy' => $this->certification_by,
-            'bannerImage' => $this->banner_image,
-            'description' => $this->when($this->description, $this->description),
-            'authorId' => $this->when($this->author_id, $this->author_id),
-            'duration' => $this->when($this->duration, $this->duration),
-            'title' => $this->when($this->title, $this->title),
             'faqs' => $this->faqs,
             'modules' => $this->modules,
-            'enrollment' => $this->enrollment,
-            'avgRating' => $this->avg_rating,
             'courseReview' => $courseReview,
-            'relatedCourses' => $relatedCourses ?? [] ,
-            'courseReviews' => CourseReview::collection(($this->courseReviews)),
-            'instructorReviews' => $instructorReviews,
-            // 'reviews' => new CourseReview($this->whenLoaded('reviews')),
+            'videoId' => $this->video_id,
+            'avgRating' => $this->avg_rating,
+            'enrollment' => $this->enrollment,
             'transaction' => $this->transaction,
-            'learnersCount' => CourseEnrollment::learnersCountFor($this->id),
-            'courseId' => $this->when($this->course_id, $this->course_id),
+            'publishedAt' => $this->published_at,
+            'bannerImage' => $this->banner_image,
+            'id' => $this->when($this->id, $this->id),
+            'relatedCourses' => $relatedCourses ?? [],
+            'instructorReviews' => $instructorReviews,
+            'certificationBy' => $this->certification_by,
+            'slug' => $this->when($this->slug, $this->slug),
+            'title' => $this->when($this->title, $this->title),
             'price' => $this->when($this->price, $this->price),
             'author' => new UserResource($this->whenLoaded('author')),
-            'resources' => Resource::collection($this->whenLoaded('resources')),
-            'batches' => CourseBatch::collection($this->whenLoaded('batches')),
-            'timetable' => Timetable::collection($this->whenLoaded('timetable')),
-            'instructor' => new UserResource($this->when($this->instructor, $this->instructor)),
-            // 'instructor' => $this->when($instructor, $instructor),
-            'instructors' => UserResource::collection($this->whenLoaded('instructors')),
-            'coursePath' => new CoursePathResource($this->whenLoaded('coursePath')),
+            'duration' => $this->when($this->duration, $this->duration),
             'category' => $this->when($this->category, $this->category),
+            'authorId' => $this->when($this->author_id, $this->author_id),
+            'courseId' => $this->when($this->course_id, $this->course_id),
+            'learnersCount' => CourseEnrollment::learnersCountFor($this->id),
             'batchName' => $this->when($this->batch_name, $this->batch_name),
+            'batches' => CourseBatch::collection($this->whenLoaded('batches')),
+            'resources' => Resource::collection($this->whenLoaded('resources')),
+            'courseReviews' => CourseReview::collection(($this->courseReviews)),
+            'description' => $this->when($this->description, $this->description),
+            'institution' => $this->when($this->institution, $this->institution),
+            'timetable' => Timetable::collection($this->whenLoaded('timetable')),
+            'coursePath' => new CoursePathResource($this->whenLoaded('coursePath')),
+            'coursePathId' => $this->when($this->course_path_id, $this->course_path_id),
+            'instructors' => UserResource::collection($this->whenLoaded('instructors')),
+            'isPublished' => $this->when($this->is_published >= 0, $this->is_published),
             'modeOfDelivery' => $this->when($this->mode_of_delivery, $this->mode_of_delivery),
+            'instructor' => new UserResource($this->when($this->instructor, $this->instructor)),
             'commencementDates' => $this->when($this->commencementDates, $this->commencementDates),
+            'coursePathPosition' => $this->when($this->course_path_position, $this->course_path_position),
             'availableModesOfDelivery' => $this->when($this->availableModesOfDelivery, $this->availableModesOfDelivery),
         ];
     }

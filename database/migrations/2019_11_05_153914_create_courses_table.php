@@ -21,7 +21,6 @@ class CreateCoursesTable extends Migration
             $table->unsignedBigInteger('author_id');
             $table->double('duration')->nullable();
             $table->text('institution')->nullable();
-            // $table->text('slug')->nullable();
             $table->text('description')->nullable();
             $table->text('banner_image')->nullable();
             $table->double('price', 12, 2)->nullable();
@@ -39,7 +38,7 @@ class CreateCoursesTable extends Migration
                 ->on('course_paths')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            
+
             // $table->foreign('author_id')
             //     ->references('id')
             //     ->on('users')

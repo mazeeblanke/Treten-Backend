@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CoursePath;
+use App\Filters\CoursePathCollectionFilters;
 use Illuminate\Http\Request;
 use App\Http\Resources\CoursePathCollection;
 
@@ -13,28 +14,19 @@ class CoursePathController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, CoursePathCollectionFilters $filters)
     {
-        $pageSize = $request->pageSize ?? 8;
-        $page = $request->page ?? 1;
-        $q = $request->q ?? '';
-
-        $builder = CoursePath::with(['courses' => function ($q) {
-            $q->orderBy('course_path_position');
-        }])->where(function ($query) use ($q) {
-                if ($q) {
-                    return $query
-                        ->orWhere('name', 'like', '%' . $q . '%')
-                        ->orWhere('description', 'like', '%' . $q . '%');
-                }
-                return $query;
-            });
-
-        $testimonials = $builder
-            ->latest()
-            ->paginate($pageSize, '*', 'page', $page);
-
-        return response()->json(new CoursePathCollection($testimonials));
+        return response()->json(new CoursePathCollection(
+            CoursePath::withOrderedCourses()
+                ->filterUsing($filters)
+                ->latest()
+                ->paginate(
+                    $request->pageSize ?? 8,
+                    '*',
+                    'page',
+                    $request->page ?? 1
+                )
+        ));
     }
 
     /**

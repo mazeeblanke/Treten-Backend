@@ -16,6 +16,28 @@ class CoursePath extends Model
         return $this->hasMany(Course::class);
     }
 
+    public function scopeWithOrderedCourses ($query)
+    {
+        $query
+            ->with(['courses' => function ($q) {
+                $q->whereHas('instructors', function ($q) {
+                    return $q->hasCourseTimetable();
+                })
+                ->orderBy('course_path_position');
+            }])
+            ->whereHas('courses', function ($q) {
+                $q->whereHas('instructors', function ($q) {
+                    return $q->hasCourseTimetable();
+                })
+                ->where('courses.is_published', 1);
+            });
+    }
+
+    public function scopeFilterUsing ($query, $filters)
+    {
+        $filters->apply($query);
+    }
+
     public function getBannerImageAttribute($value)
     {
         return $value ? \Storage::url($value) : null;

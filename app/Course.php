@@ -5,57 +5,65 @@ namespace App;
 use Exception;
 use App\CourseBatchAuthor;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Course extends Model
 {
     protected $fillable = [
         'course_path_position',
+        'certification_by',
         'course_path_id',
+        'banner_image',
         'is_published',
         'published_at',
         'institution',
-        'certification_by',
-        'banner_image',
         'description',
         'author_id',
+        'created_at',
         'duration',
+        'video_id',
+        'modules',
         'title',
         'faqs',
-        'modules',
         'price',
-        'created_at',
     ];
 
     protected $appends = [
-        'category',
-        'instructor',
         'certification_by',
+        'instructor',
+        'category',
         'slug'
     ];
 
     public static $rules = [
         'course_path_position' => 'nullable',
+        'certification_by' => 'nullable',
         'course_path_id' => 'nullable',
         'is_published' => 'nullable',
         'published_at' => 'nullable',
         'institution' => 'nullable',
-        'certification_by' => 'nullable',
         'banner_image' => 'nullable',
         'description' => 'required',
+        'video_id' => 'nullable',
         'duration' => 'nullable',
+        'modules' => 'nullable',
         'title' => 'required',
         'faqs' => 'nullable',
-        'modules' => 'nullable',
         'price' => 'nullable',
+    ];
+
+    public static $getRules = [
+        "notassigned" => ""
+        //validate notassigned, must be 1 or 0
+        //validate withBatches, must be 1 or 0
+        //validate ninstructor, must be numeric and also check that the requester has the right permission to access the information
+        //if instructor id then use permissins,
+        // isPublished must be 0 or 1
     ];
 
     public function transactions () {
         return $this->hasMany(Transaction::class, 'course_id');
     }
-
-    // public function transaction () {
-    //     return $this->transactions();
-    // }
 
     public function enrollments () {
         return $this->hasMany(CourseEnrollment::class, 'course_id');
@@ -64,10 +72,6 @@ class Course extends Model
     public function timetable () {
         return $this->hasMany(CourseBatchAuthor::class, 'course_id');
     }
-
-    // public function enrollment () {
-    //     return $this->enrollments();
-    // }
 
     public function getFaqsAttribute($value)
     {
@@ -85,7 +89,9 @@ class Course extends Model
 
     public function getCertificationByAttribute($value)
     {
-        return is_array(unserialize($value))
+       $certBy = (array)json_decode(unserialize($value));
+
+        return isset($certBy['value']) && isset($certBy['label'])
         ? json_decode(unserialize($value))
         : [
             'value' => '',
@@ -95,8 +101,7 @@ class Course extends Model
 
     public function getBannerImageAttribute($value)
     {
-        return $value ? \Storage::url($value) : null;
-        // return $value ? \Storage::url($value).'?='.now() : null;
+        return $value ? Storage::url($value) : null;
     }
 
     public function setFaqsAttribute($value)
@@ -132,7 +137,11 @@ class Course extends Model
 
     public function categories()
     {
-        return $this->belongsToMany(CourseCategory::class, 'course_categories_allocation');
+        return $this
+        ->belongsToMany(
+            CourseCategory::class,
+            'course_categories_allocation'
+        );
     }
 
     public function courseReviews()
@@ -144,54 +153,84 @@ class Course extends Model
     {
         return $this->hasMany(InstructorReview::class);
     }
-    
+
     public function category()
     {
         return $this->categories->first();
     }
 
-    public function scopeFilter ($query, $filters)
+    public function scopeFilterUsing ($query, $filters)
     {
         $filters->apply($query);
+    }
+
+    public function scopeHasInstructors ($query)
+    {
+        $query
+            ->with(['instructors' => function($query) {
+                    return $query->hasCourseTimetable();
+            }])
+            ->whereHas('instructors', function ($query) {
+                return $query->hasCourseTimetable();
+            });
+    }
+
+    public function scopeMainCategories ($query)
+    {
+        $query->with('categories')
+            ->whereHas('categories', function ($query) {
+                return $query->where(function ($query) {
+                    return $query
+                        ->orWhere('name', 'associate')
+                        ->orWhere('name', 'expert')
+                        ->orWhere('name', 'professional');
+                });
+            });
+    }
+
+    public function scopeOrderByLatest ($query)
+    {
+        $query->orderBy('courses.created_at', request()->sort ?? 'desc');
     }
 
     public function scopeUniqueCoursesWithBatches ($query)
     {
         $query->select(
             \DB::raw('max(course_batch_author.id) as cba_id'),
-                'courses.id', 
+                'courses.id',
                 'courses.title',
                 'courses.created_at',
                 'courses.banner_image',
                 'course_batch_author.course_id'
             )
             ->join(
-                'course_batch_author', 
+                'course_batch_author',
                 'course_batch_author.course_id',
                 'courses.id'
             );
     }
-    
-    // public function batches()
-    // {
-    //     return $this->hasMany(CourseBatch::class);
-    // }
-    
+
     public function instructors()
     {
-        return $this->belongsToMany(User::class, 'course_batch_author', 'course_id', 'author_id');
+        return $this
+        ->belongsToMany(
+            User::class,
+            'course_batch_author',
+            'course_id',
+            'author_id'
+        )
+        ->hasCourseTimetable();
     }
-
-    // public function instructor()
-    // {
-    //     return $this->instructors->first();
-    //     // return $this->belongsTo(CourseBatchAuthor::class, 'author_id', 'course_id');
-    // }
 
     public function batches()
     {
-        return $this->belongsToMany(CourseBatch::class, 'course_batch_author', 'course_id', 'course_batch_id')
-        // ->as('batch')
+        return $this
+        ->belongsToMany(
+            CourseBatch::class,
+            'course_batch_author',
+            'course_id',
+            'course_batch_id'
+        )
         ->withPivot([
             'id',
             'author_id',
@@ -248,6 +287,7 @@ class Course extends Model
             'faqs' => $request->faqs,
             'title' => $request->title,
             'price' => $request->price,
+            'video_id' => $request->videoId,
             'modules' => $request->modules,
             'course_path_id' => $coursePath,
             'duration' => $request->duration,
@@ -256,28 +296,28 @@ class Course extends Model
             'description' => $request->description,
             'is_published' => $request->isPublished,
             'certification_by' => $request->certificationBy,
-            'published_at' => $request->isPublished == 1 ? now() : null,
             'course_path_position' => $coursePathPosition,
+            'published_at' => $request->isPublished == 1 ? now() : null,
         ]);
-        // return $this;
     }
-    
+
     protected function saveCourse($request, $coursePath, $coursePathPosition)
     {
         $this->update([
+            'author_id' => request()->user()->id,
             'faqs' => $request->faqs ?? $this->faqs,
             'title' => $request->title ?? $this->title,
             'price' => $request->price ?? $this->price,
+            'course_path_position' => $coursePathPosition,
             'modules' => $request->modules ?? $this->modules,
-            'course_path_id' => $coursePath ?? $this->course_path_id,
-            'certification_by' => $request->certificationBy ?? $this->certification_by,
-            'author_id' => request()->user()->id,
-            'institution' => $request->institution ?? $this->institution,
             'duration' => $request->duration ?? $this->duration,
+            'video_id' => $request->videoId,
+            'course_path_id' => $coursePath ?? $this->course_path_id,
+            'published_at' => $request->isPublished == 1 ? now() : null,
+            'institution' => $request->institution ?? $this->institution,
             'description' => $request->description ?? $this->description,
             'is_published' => $request->isPublished ?? $this->is_published,
-            'published_at' => $request->isPublished == 1 ? now() : null,
-            'course_path_position' => $coursePathPosition,
+            'certification_by' => $request->certificationBy ?? $this->certification_by,
         ]);
         return $this;
     }
@@ -286,72 +326,61 @@ class Course extends Model
     {
         if (request()->hasFile('bannerImage')) {
             $extension = request()->file('bannerImage')->extension();
-            \Storage::delete($this->banner_image);
-            $banner_image = request()->file('bannerImage')->storeAs('courses', "{$this->id}.{$extension}");
-            // dd($banner_image);
+            Storage::delete($this->banner_image);
+            $banner_image = request()
+                ->file('bannerImage')
+                ->storeAs(
+                    'courses',
+                    "{$this->id}.{$extension}"
+                );
             $this->update([
-                'banner_image' => $banner_image,
-                // 'slug' => "{$slug}_{$this->id}",
+                'banner_image' => $banner_image
             ]);
         }
         return $this;
     }
 
-    private function calculateCoursePathPosition ($coursePath, $coursePathPosition) 
+    private function calculateCoursePathPosition ($coursePath, $coursePathPosition)
     {
         $suggestedPosition = $this->suggestPosition($coursePath);
-        // dd($suggestedPosition);
+
         if ($coursePathPosition >= $suggestedPosition) {
             $coursePathPosition = $suggestedPosition;
         }
-        // if ($coursePathPosition < $suggestedPosition) {
-            $rearrangedCourses = CoursePath::find($coursePath)
-                ->courses()
-                ->where('courses.id', '!=', $this->id)
-                ->get()
-                ->sortBy('course_path_position');
-            // $courseToBeUpdated = Course::whereId($this->id)->first(); 
-            // dd($courseToBeUpdated);   
-            $rearrangedCourses->splice($coursePathPosition - 1, 0, false);
-            // dd($rearrangedCourses);
-            $rearrangedCourses = $rearrangedCourses
-                ->map(function ($course, $key) {
-                    // $course = $course ??  Course::whereId($this->id)->first();
-                    if (!$course) {
-                        $course = Course::whereId($this->id)->first();
-                    }
-                    if ($course) {
-                        $course->course_path_position = $key + 1;
-                        return $course;
-                    }
-                    return null;
-                })
-                ->filter(function ($course) {
-                    return !is_null($course);
-                });
-                // dd($rearrangedCourses);  
-                
-            CoursePath::find($coursePath)->courses()->saveMany($rearrangedCourses->all());
-        // }
+
+        $rearrangedCourses = CoursePath::find($coursePath)
+            ->courses()
+            ->where('courses.id', '!=', $this->id)
+            ->get()
+            ->sortBy('course_path_position');
+
+        $rearrangedCourses->splice($coursePathPosition - 1, 0, false);
+
+        $rearrangedCourses = $rearrangedCourses
+            ->map(function ($course, $key) {
+                if (!$course) {
+                    $course = Course::whereId($this->id)->first();
+                }
+                if ($course) {
+                    $course->course_path_position = $key + 1;
+                    return $course;
+                }
+                return null;
+            })
+            ->filter(function ($course) {
+                return !is_null($course);
+            });
+
+        CoursePath::find($coursePath)
+            ->courses()
+            ->saveMany($rearrangedCourses->all());
+
         return $coursePathPosition;
     }
 
     private function saveCategories()
     {
         $category = request()->category;
-        // $categoryIds = array_filter(request()->categories, function ($category) {
-        //     return is_numeric($category);
-        // });
-
-        // $categories = array_filter(request()->categories, function ($category) {
-        //     return is_string($category) && !is_numeric($category);
-        // });
-
-        // $categories = array_map(function ($category) {
-        //     return [
-        //         'name' => $category,
-        //     ];
-        // }, $categories);
 
         if (is_string($category) && !is_numeric($category)) {
             $savedCategory = CourseCategory::whereName($category)->first();
@@ -365,10 +394,7 @@ class Course extends Model
         }
 
         if (is_numeric($category)) {
-            // dd($this->category->id);
-            // dd($this->category()->exists);
             if (request()->id && optional($this->category())->exists) {
-                // dd('lkj');
                 \DB::table('course_categories_allocation')->where('course_id', $this->id)->delete();
             }
             $this->categories()->attach([$category]);
@@ -396,16 +422,24 @@ class Course extends Model
         }
 
         if ($instance->coursePathIsString($coursePath)) {
-            // dd(CoursePath::whereName($coursePath)->exists());
             if (!$coursePath = CoursePath::whereName($coursePath)->first()) {
                 $coursePath = CoursePath::create([
                         'name' => $request->coursePath,
+                        'banner_image' => collect([
+                            'courses/course1.png',
+                            'courses/course2.png',
+                            'courses/course3.png',
+                            'courses/course4.png',
+                            'courses/course5.png',
+                        ])
+                            ->random(1)
+                            ->first()
                     ])->id;
                 $coursePathPosition = 1;
             } else {
                 //handle
                 $coursePath = $coursePath->id;
-                
+
                 if ($coursePathPosition !== $instance->coursePathPosition) {
                     $coursePathPosition = $instance->calculateCoursePathPosition($coursePath, $coursePathPosition);
                 }
@@ -470,7 +504,7 @@ class Course extends Model
             } else {
                 //handle
                 $coursePath = $coursePath->id;
-                
+
                 if ($coursePathPosition !== $this->coursePathPosition) {
                     $coursePathPosition = $instance->calculateCoursePathPosition($coursePath, $coursePathPosition);
                 }
@@ -483,8 +517,8 @@ class Course extends Model
             ->saveCategories()
             ->fresh()
             ->load([
-                'coursePath', 
-                'author', 
+                'coursePath',
+                'author',
                 'batches' => function ($query) {
                     return $query
                         ->where('course_batch_author.author_id', auth()->user()->id)

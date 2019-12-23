@@ -26,14 +26,16 @@ class CourseCollectionFilters extends Filters {
 
  protected function filterByCategory ()
  {
-		$this->builder = $this
-			->builder
-			->whereHas('categories', function($query) {
-				return $query->where(
-					'course_categories.name', 
-					$this->request->category
-				);
-			});
+    if ($this->request->category !== 'all') {
+        $this->builder = $this
+            ->builder
+            ->whereHas('categories', function($query) {
+                return $query->where(
+                    'course_categories.name',
+                    $this->request->category
+                );
+            });
+    }
  }
 
  protected function filterByCategoryId ()
@@ -43,7 +45,7 @@ class CourseCollectionFilters extends Filters {
 			->whereHas('categories', function($query) {
 				return $query
 					->where(
-						'course_categories.id', 
+						'course_categories.id',
 						$this->request->categoryId
 					);
 			});
@@ -63,8 +65,8 @@ class CourseCollectionFilters extends Filters {
 		$this->builder = $this
 			->builder
 			->where(
-				'courses.title', 
-				'like', 
+				'courses.title',
+				'like',
 				"%{$this->request->q}%"
 			);
  }
@@ -73,15 +75,15 @@ class CourseCollectionFilters extends Filters {
  {
 	  if (!auth()->check()) return;
 
-	  if ($this->request->enrolled === 0)
+	  if ((int) $this->request->enrolled === 0)
 	  {
 			$this->builder = $this
 				->builder
 				->whereDoesntHave('enrollments');
-			return;	
+			return;
 	  }
 
-		if ($this->request->enrolled === 1)
+		if ((int) $this->request->enrolled === 1)
 	  {
 			$this->builder = $this
 				->builder
@@ -89,13 +91,13 @@ class CourseCollectionFilters extends Filters {
 					$query->whereUserId(auth()->user()->id)->whereActive(1);
 				})
 				->join(
-					'course_enrollments', 
-					'course_enrollments.course_id', 
+					'course_enrollments',
+					'course_enrollments.course_id',
 					'courses.id'
 				)
 				->join(
-					'course_batches', 
-					'course_batches.id', 
+					'course_batches',
+					'course_batches.id',
 					'course_enrollments.course_batch_id'
 				)
 				->select(
@@ -114,19 +116,14 @@ class CourseCollectionFilters extends Filters {
  protected function filterByHasInstructor ()
  {
 
-	if ($this->request->hasInstructor === 1) {
+	if ((int) $this->request->hasInstructor === 1) {
 		$this->builder = $this
 			->builder
-			->with(['instructors' => function($query) {
-					return $query->hasCourseTimetable();
-			}])
-			->whereHas('instructors', function ($query) {
-				return $query->hasCourseTimetable();
-			});
-		return;	
+			->hasInstructors();
+		return;
 	}
 
-	if ($this->request->hasInstructor === 0) {
+	if ((int) $this->request->hasInstructor === 0) {
 		$this->builder = $this
 			->builder
 			->with(['instructors' => function($query) {
@@ -143,22 +140,22 @@ class CourseCollectionFilters extends Filters {
  {
 
 		if (isset($this->request->notAssigned)) return;
-		
+
 		$authorId = $this->processAuthorId($this->request->authorId);
 
 		$courseIds = Course::uniqueCoursesWithBatches()
 			->groupBy('course_batch_author.course_id')
 			->where(
-				'course_batch_author.author_id', 
+				'course_batch_author.author_id',
 				$authorId
 			)
 			->get()
 			->pluck('id')
 			->toArray();
-		
+
 			$this->builder = $this
 				->builder
-				->whereIn('id', $courseIds); 	
+				->whereIn('id', $courseIds);
 
  }
 
@@ -167,29 +164,29 @@ class CourseCollectionFilters extends Filters {
 		if (!isset($this->request->authorId)) return;
 
 		$authorId = $this->processAuthorId($this->request->authorId);
-		
+
 		$builder = Course::uniqueCoursesWithBatches();
 
-		if ($this->request->notAssigned === 1) {
+		if ((int) $this->request->notAssigned === 1) {
 
 			$builder = $this->applyNotAssignedFilters($authorId, $builder);
 
-		} 
+		}
 
-		if ($this->request->notAssigned === 0) {
+		if ((int) $this->request->notAssigned === 0) {
 
 			$builder = $this->applyAssignedFilters($authorId, $builder);
-			
-		} 
-				
-		$courseIds = $builder->get()->pluck('id')->toArray();    
 
-		$this->builder = $this->builder->whereIn('id', $courseIds);   
+		}
+
+		$courseIds = $builder->get()->pluck('id')->toArray();
+
+		$this->builder = $this->builder->whereIn('id', $courseIds);
  }
 
  private function applyNotAssignedFilters ($authorId, $builder)
  {
-	 
+
 		$courseIds = CourseBatchAuthor::getAuthorCourseAllocationIds($authorId);
 
 		return $builder
@@ -204,7 +201,7 @@ class CourseCollectionFilters extends Filters {
 
 		return $builder
 			->where(
-				'course_batch_author.author_id', 
+				'course_batch_author.author_id',
 				$authorId
 			)
 			->groupBy(
@@ -240,7 +237,7 @@ class CourseCollectionFilters extends Filters {
 			'data' => []
 		]);
 	}
-	
+
 	if ($authorId instanceof User) {
 		$authorId = $authorId->id;
 	}
