@@ -22,15 +22,12 @@ class BlogPost extends JsonResource
             'blogSlug' => $this->blog_slug,
             'body' => $this->body,
             'title' => $this->title,
-            'read' => $this->read,
             'publishedAt' => $this->published_at,
             'friendlyPublishedAt' => $this->friendly_published_at,
             'contentSummary' => $this->content_summary,
             'author' => new UserResource($this->whenLoaded('author')),
             'tags' => new TagResource($this->whenLoaded('tags')),
             'authorId' => $this->author_id,
-            'receiverId' => $this->receiver_id,
-            'messageType' => $this->message_type,
         ];
     }
 }

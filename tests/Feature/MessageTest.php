@@ -2,16 +2,18 @@
 
 namespace Tests\Feature;
 
-use App\Events\MessageReceived;
-use App\Instructor;
 use App\Message;
 use App\Student;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Instructor;
 use Tests\TestCase;
+use App\Events\MessageReceived;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class MessageTest extends TestCase
 {
     use RefreshDatabase;
+    // use DatabaseTransactions;
     /**
      * A basic feature test example.
      *

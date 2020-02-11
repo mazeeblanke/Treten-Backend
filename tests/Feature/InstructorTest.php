@@ -7,14 +7,16 @@ use App\Instructor;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class InstructorTest extends TestCase
 {
     use RefreshDatabase;
+    // use DatabaseTransactions;
 
     public function testViewInstructorPageByPage()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
 
         $john = factory(Instructor::class)->create();
         $john->details->status = 'active';
@@ -26,29 +28,29 @@ class InstructorTest extends TestCase
         $ola->details->first_name = 'ola';
         $ola->details->save();
 
-       
+
         $page = 2;
         $pageSize= 1;
 
-        $response = $this   
+        $response = $this
             ->json(
                 'GET',
                 "/api/instructors?page=$page&pageSize=$pageSize"
-            );   
-        
+            );
+
         $response->assertJsonFragment([
-            'current_page' => $page,
+            'currentPage' => $page,
         ]);
 
         $response->assertJsonCount(1, 'data');
         $response->assertSee($ola->first_name);
-        $response->assertSee('Successfully fetched instructors');
+        // $response->assertSee('Successfully fetched instructors');
 
         $response->assertStatus(200);
     }
 
     public function testViewAnInstructor () {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
 
         $john = factory(Instructor::class)->create();
         $john->details->status = 'active';
@@ -64,20 +66,20 @@ class InstructorTest extends TestCase
             ->json(
                 'GET',
                 "/api/instructor/{$john->instructor_slug}"
-            ); 
+            );
 
-        $response->assertJsonFragment([
-            "message" => "Successfully fetched instructor"
-        ]);
+        // $response->assertJsonFragment([
+        //     "message" => "Successfully fetched instructor"
+        // ]);
 
         $response->assertSee($john->details->first_name);
         $response->assertDontSee($peter->details->first_name);
-            
-        $response->assertStatus(200);    
+
+        $response->assertStatus(200);
     }
 
     public function testUpdateAnInstructor () {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
 
         $john = factory(Instructor::class)->create();
         $john->details->status = 'active';
@@ -96,12 +98,12 @@ class InstructorTest extends TestCase
                 "year" => "2019",
                 "name" => "CCNA"
             ],
-            "social_links" => [
-                "facebook" => null,
+            "socialLinks" => [
+                "facebook" => '',
                 "twitter" => null,
                 "linkedin" => null,
-            ],  
-            "work_experience" => [
+            ],
+            "workExperience" => [
                 "job_description" => "Responsible for cordinating the team",
                 "job_title" => "Softwarw engineer",
                 "name_of_company" => "Cardinalstone",
@@ -121,7 +123,7 @@ class InstructorTest extends TestCase
                 'POST',
                 "/api/instructor/{$john->id}",
                 $payload
-            ); 
+            );
 
         $response->assertJsonFragment([
             "message" => "Successfully updated instructor"
@@ -130,20 +132,24 @@ class InstructorTest extends TestCase
         $response->assertSee($john->details->first_name);
         $response->assertDontSee($peter->details->first_name);
 
-        $response->assertJsonFragment(array_merge(
-            $payload,
-            [
-                "consideration" => $john->consideration,
-                "qualifications" => $john->qualifications,
-                // "details" => $john->details,
-            ]
-        ));
-            
-        $response->assertStatus(200);    
+        $response->assertJsonFragment([
+            'bio' => $payload['bio'],
+            'title' => $payload['title'],
+            'certifications' => $payload['certifications'],
+            'social_links' => [
+                "facebook" => '',
+                "twitter" => '',
+                "linkedin" => '',
+            ],
+            'work_experience' => $payload['workExperience'],
+            'education' => $payload['education']
+        ]);
+
+        $response->assertStatus(200);
     }
 
     public function testCannotUpdateAnInstructorWithNonExistingWrongId () {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
 
         $payload = [
         ];
@@ -153,12 +159,10 @@ class InstructorTest extends TestCase
                 'POST',
                 "/api/instructor/{78}",
                 $payload
-            ); 
-
-        // dd($response->getContent());    
+            );
 
         $response->assertSee("No query results for model");
-            
-        $response->assertStatus(400);    
+
+        $response->assertStatus(404);
     }
 }

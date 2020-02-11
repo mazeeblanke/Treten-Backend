@@ -13,11 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
 Route::group(['prefix' => 'api'], function () {
+    Route::get('/', 'HomeController@index');
     Route::post('login', 'Auth\LoginController@login');
     Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 
@@ -27,6 +24,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 
     Route::get('blog-posts', 'BlogPostController@index');
+    Route::post('blog-posts', 'BlogPostController@store');
     Route::get('blog-post/{blogpost_slug}', 'BlogPostController@show');
     Route::get('latest-blog-posts', 'BlogPostController@latestBlogPosts');
     Route::get('instructor/{instructor_slug}', 'InstructorController@show');
@@ -34,6 +32,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::get('courses', 'CourseController@index');
     Route::get('courses/{course}', 'CourseController@show');
     Route::post('courses/{course}', 'CourseController@update');
+    Route::delete('courses/{course}', 'CourseController@destroy');
     Route::get('popular-courses', 'CourseController@popular');
     Route::get('courses-by-categories', 'CourseController@groupByCategories');
     Route::post('course', 'CourseController@Store');
@@ -86,7 +85,7 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('broadcasts', 'BroadcastsController@store')->name('broadcast.store');
     Route::get('messagethread/{message_uuid}', 'MessageController@show')->name('message.show');
 
-    Route::get('dashboard-stats', 'DashboardController@dashboardStats');
+    Route::get('dashboard-stats', 'DashboardController@dashboardStats')->middleware('auth');
 });
 
 // Authentication Routes...
@@ -99,7 +98,7 @@ Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::get('auth/{provider}', 'Auth\SocialController@redirectToProvider');
 Route::get('auth/{provider}/callback', 'Auth\SocialController@handleProviderCallback');
 
-Route::post('/pay', 'PaymentController@redirectToGateway')->name('pay'); 
+Route::post('/pay', 'PaymentController@redirectToGateway')->name('pay');
 Route::any('/payment/callback', 'PaymentController@handleGatewayCallback');
 
 // Password Reset Routes...
@@ -109,10 +108,3 @@ Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/invitation/{token}', 'InviteUserController@show');
-
-Route::get('/fire', function () {
-    // session()->put([
-    //     'enrollments.22' => ['wew' => 3]
-    // ]);
-    dd(request()->all());
-});

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\BlogPost;
+use App\Filters\BlogPostCollectionFilters;
 use App\Http\Requests\CreateBlogPostRequest;
 use App\Http\Resources\BlogPost as BlogPostResource;
 use App\Http\Resources\BlogPostCollection;
@@ -15,16 +16,21 @@ class BlogPostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, BlogPostCollectionFilters $filters)
     {
-        $pageSize = $request->pageSize ?? 6;
-        $page = $request->page ?? 1;
-        $blogPosts = BlogPost::with('author')
-            ->wherePublished(1)
-            ->orderBy('published_at', 'desc')
-            ->paginate($pageSize, '*', 'page', $page);
-
-        return response()->json(new BlogPostCollection($blogPosts));
+        return response()->json(
+            new BlogPostCollection(
+                BlogPost::with('author')
+                    ->filterUsing($filters)
+                    ->orderBy('published_at', 'desc')
+                    ->paginate(
+                        $request->pageSize ?? 6,
+                        '*',
+                        'page',
+                        $request->page ?? 1
+                    )
+            )
+        );
     }
 
     public function latestBlogPosts()

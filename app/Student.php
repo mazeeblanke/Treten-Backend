@@ -2,12 +2,15 @@
 
 namespace App;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Interfaces\Registrable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model implements Registrable
 {
     //
+    use SoftDeletes;
+
 
     protected $fillable = [
         'best_instructor',

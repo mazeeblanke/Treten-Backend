@@ -3,11 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 // use Illuminate\Database\Eloquent\Relations\Pivot;
 
 class CourseBatchAuthor extends Model
 // class CourseBatchInstructor extends Pivot
 {
+    use SoftDeletes;
+
     protected $table = "course_batch_author";
     protected $fillable = [
         'author_id',
@@ -20,7 +23,7 @@ class CourseBatchAuthor extends Model
     protected $appends = [
         'timetable'
     ];
-    
+
     public function author()
     {
         return $this->belongsTo(Instructor::class, 'author_id');

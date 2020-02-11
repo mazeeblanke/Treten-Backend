@@ -2,18 +2,23 @@
 
 namespace App;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\Filterable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Notifications\ResetPasswordNotification;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable
 {
     use Notifiable;
     use HasRoles;
+    use Filterable;
+    use SoftDeletes;
+
 
     /**
      * The attributes that are mass assignable.
@@ -120,7 +125,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Determine the role of a user 
+     * Determine the role of a user
      *
      * @return string
      */
@@ -223,10 +228,10 @@ class User extends Authenticatable
 
         return array_merge([
             [
-                'Name', 
-                'Status', 
-                'Phone Number', 
+                'Name',
                 'Email Address',
+                'Phone Number',
+                'Status',
                 'Sign up date and time'
             ]
         ], $users->toArray());

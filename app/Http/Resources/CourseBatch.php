@@ -15,8 +15,8 @@ class CourseBatch extends JsonResource
      */
     public function toArray($request)
     {
-        $timetable = $this->pivot ? $this->pivot->timetable : $this->timetable;
-        $courseBatchAuthorId = $this->pivot ? $this->pivot->id : null;
+        $timetable = isset($this->pivot) ? $this->pivot->timetable : $this->timetable;
+        $courseBatchAuthorId = isset($this->pivot) ? $this->pivot->id : null;
         // dd($this->pivot);
 
         // dd(unserialize(unserialize($timetable)));
@@ -40,7 +40,7 @@ class CourseBatch extends JsonResource
             'courseId' => $this->when($this->course_id, $this->course_id),
             'timetable' => is_null($timetable) ? [] : unserialize($timetable),
             'courseBatchAuthorId' => $courseBatchAuthorId,
-            'author' => new UserResource($this->whenLoaded('author')), 
+            'author' => new UserResource($this->whenLoaded('author')),
         ];
     }
 }

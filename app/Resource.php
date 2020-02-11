@@ -3,32 +3,35 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Resource extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
       'file',
       'course_id',
       'author_id',
       'title',
-      'summary'  
+      'summary'
     ];
 
     protected $appends = [
-      'download_link'  
+      'download_link'
     ];
 
     public function author()
     {
         return $this->belongsTo(User::class);
     }
-    
+
     public function course()
     {
         return $this->belongsTo(Course::class);
     }
 
-    public function getDownloadLinkAttribute () 
+    public function getDownloadLinkAttribute ()
     {
         return \Storage::disk()->url($this->file);
     }
@@ -53,7 +56,7 @@ class Resource extends Model
             $im->pingImage(\Storage::disk()->path($filePath));
             $this->update([
                 'file' => $filePath,
-                'summary' => strtoupper($extension). ", {$im->getNumberImages()} Page(s) {$fileSize} MB" 
+                'summary' => strtoupper($extension). ", {$im->getNumberImages()} Page(s) {$fileSize} MB"
             ]);
         }
         return $this;
@@ -62,7 +65,7 @@ class Resource extends Model
     public static function store ($request)
     {
         $instance = Resource::create([
-            'title' => $request->title, 
+            'title' => $request->title,
             'author_id' => auth()->user()->id,
             'file' => '',
             // 'author_id' => $request->authorId,

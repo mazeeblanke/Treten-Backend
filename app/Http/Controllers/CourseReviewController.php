@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Course;
 use App\CourseReview;
+use App\Filters\CourseReviewCollectionFilters;
 use App\Http\Requests\ApproveCourseReviewRequest;
 use App\Http\Requests\CreateCourseReviewRequest;
+use App\Http\Requests\ListCourseReviewRequest;
 use App\Http\Requests\UpdateCourseReviewRequest;
 use App\Http\Resources\CourseReview as AppCourseReview;
 use App\Http\Resources\CourseReviewCollection;
@@ -18,47 +20,24 @@ class CourseReviewController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(ListCourseReviewRequest $request, CourseReviewCollectionFilters $filters)
     {
-        $pageSize = $request->pageSize ?? 8;
-        $page = $request->page ?? 1;
-        $q = $request->q ?? '';
-        $isApproved = (int) $request->isApproved;
-        $sort = in_array($request->sort, ['asc', 'desc'])
-            ? $request->sort
-            : 'desc';
-
-        $builder = CourseReview::with(['enrollee', 'course'])
-            ->orWhereHas('enrollee', function ($query) use ($q) {
-                if ($q) {
-                    return $query->where('users.first_name', 'like', '%' . $q . '%');
-                }
-                return $q;
-            })
-            ->orWhereHas('course', function ($query) use ($q) {
-                if ($q) {
-                    return $query->where('courses.title', 'like', '%' . $q . '%');
-                }
-                return $q;
-            })
-            ->orWhere(function ($query) use ($q) {
-                if ($q) {
-                    return $query
-                        ->orWhere('review_text', 'like', '%' . $q . '%')
-                        ->orWhere('course_reviews.created_at', 'like', '%' . $q . '%');
-                }
-                return $query;
-            });
-
-        if ($isApproved) {
-            $builder = $builder->whereApproved(1);
-        }
-
-        $courseReviews = $builder
-            ->orderBy('course_reviews.created_at', $sort)
-            ->paginate($pageSize, '*', 'page', $page);
-
-        return response()->json(new CourseReviewCollection($courseReviews));
+        return response()->json(
+            new CourseReviewCollection(
+                CourseReview::with(['enrollee', 'course'])
+                    ->filterUsing($filters)
+                    ->orderBy(
+                        'course_reviews.created_at',
+                        $request->sort ?? 'desc'
+                    )
+                    ->paginate(
+                        $request->pageSize ?? 8,
+                        '*',
+                        'page',
+                        $request->page ?? 1
+                    )
+            )
+        );
     }
 
     /**
@@ -109,7 +88,7 @@ class CourseReviewController extends Controller
             $averageRating = CourseReview::whereCourseId($course->id)
                 ->whereApproved(1)
                 ->avg('rating');
-            // Reset to 2.5 if all ratings have been disapproved    
+            // Reset to 2.5 if all ratings have been disapproved
             $course->avg_rating = $averageRating ?? 2.5;
             $course->save();
             return response()->json([
@@ -160,7 +139,7 @@ class CourseReviewController extends Controller
             $averageRating = CourseReview::whereCourseId($course->id)
                 ->whereApproved(1)
                 ->avg('rating');
-            // Reset to 2.5 if all ratings have been disapproved    
+            // Reset to 2.5 if all ratings have been disapproved
             $course->avg_rating = $averageRating ?? 2.5;
             $course->save();
             return response()->json([

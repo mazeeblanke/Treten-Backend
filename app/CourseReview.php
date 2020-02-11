@@ -2,14 +2,20 @@
 
 namespace App;
 
+use App\Traits\Filterable;
+use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Http\Requests\CreateCourseReviewRequest;
 use App\Http\Requests\UpdateCourseReviewRequest;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 
 
 class CourseReview extends Model
 {
+
+    use Filterable;
+    use SoftDeletes;
+
     /**
      * The allowed mass assignable fields
      *
@@ -123,12 +129,12 @@ class CourseReview extends Model
 
         return array_merge([
             [
-                'Date', 
-                'Enrollee Name', 
-                'Course Title', 
-                'Review Message', 
-                'Rating', 
-                'Status', 
+                'Date',
+                'Enrollee Name',
+                'Course Title',
+                'Review Message',
+                'Rating',
+                'Status',
                 'Course Id'
             ],
         ], $reviews->toArray());

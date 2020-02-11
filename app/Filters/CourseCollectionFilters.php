@@ -6,6 +6,7 @@ use App\User;
 use App\Course;
 use App\CourseBatch;
 use App\CourseBatchAuthor;
+use App\CourseEnrollment;
 
 class CourseCollectionFilters extends Filters {
  protected $filters = [
@@ -85,11 +86,25 @@ class CourseCollectionFilters extends Filters {
 
 		if ((int) $this->request->enrolled === 1)
 	  {
+        //   dd($this
+        //   ->builder
+        //   ->whereHas('enrollments', function ($query) {
+        //       $query->whereUserId(auth()->user()->id)->whereActive(1);
+        //   })
+        //   ->where('course_enrollments.user_id', auth()->user()->id)
+        //   ->join(
+        //       'course_enrollments',
+        //       'course_enrollments.course_id',
+        //       'courses.id'
+        //   )->first()->toArray());
+        //   dd(CourseEnrollment::all()->toArray());
+        //   dd(CourseBatch::all()->toArray());
 			$this->builder = $this
 				->builder
 				->whereHas('enrollments', function ($query) {
 					$query->whereUserId(auth()->user()->id)->whereActive(1);
-				})
+                })
+                ->where('course_enrollments.user_id', auth()->user()->id)
 				->join(
 					'course_enrollments',
 					'course_enrollments.course_id',
@@ -99,7 +114,8 @@ class CourseCollectionFilters extends Filters {
 					'course_batches',
 					'course_batches.id',
 					'course_enrollments.course_batch_id'
-				)
+                )
+                ->orderBy('course_enrollments.created_at', 'desc')
 				->select(
 					'courses.*',
 					'course_batches.start_date',
@@ -109,7 +125,9 @@ class CourseCollectionFilters extends Filters {
 					'course_batches.price',
 					'course_batches.course_id',
 					'course_batches.class_is_full'
-				);
+                );
+
+                // dd($this->builder->get());
 		}
  }
 

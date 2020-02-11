@@ -25,6 +25,8 @@ class TransactionsTest extends TestCase
         $transaction9 = factory(Transaction::class)->create(['description' => "transaction9"]);
         $transaction10 = factory(Transaction::class)->create(['description' => "transaction10"]);
 
+        // dd($transaction10);
+
         $page = 1;
 
         $response = $this->json(

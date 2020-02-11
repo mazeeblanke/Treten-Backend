@@ -17,6 +17,7 @@ class Course extends JsonResource
      */
     public function toArray($request)
     {
+        // dd($this->price);
 
         // $instructor = method_exists($this->whenLoaded('instructors'), 'first')
         //     ? new UserResource($this->instructors->first())

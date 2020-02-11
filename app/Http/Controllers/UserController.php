@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\UserCollectionFilters;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\User as UserResource;
@@ -16,31 +17,26 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, UserCollectionFilters $filters)
     {
-        $pageSize = $request->pageSize ?? 6;
-        $page = $request->page ?? 1;
-        $q = $request->q ?? '';
-        $with_muuid = $request->with_muuid ?? 'false';
-        $builder = User::with('details')
-            ->whereStatus('active')
-            ->where(function ($query) use ($q) {
-                return $query->orWhere('first_name', 'like', '%' . $q . '%')->orWhere('last_name', 'like', '%' . $q . '%');
-            });
-
-        if ($with_muuid == true) {
-            $builder = $builder->with(['msuuid:id,sender_id,message_uuid', 'mruuid:id,receiver_id,message_uuid']);
-        }
-
-        $users = $builder->orderBy('users.created_at', 'desc')->paginate($pageSize, '*', 'page', $page);
-
-        return response()->json((new UserCollection($users))->additional([
-            'message' => 'Successfully fetched users',
-        ]));
-
-        // return response()->json(array_merge([
-        //     'message' => 'Successfully fetched users',
-        // ], $users->toArray()));
+        return response()->json(
+            (new UserCollection(
+                User::with('details')
+                    ->filterUsing($filters)
+                    ->orderBy(
+                        'users.created_at',
+                        $request->sort ?? 'desc'
+                    )
+                    ->paginate(
+                        $request->pageSize ?? 6,
+                        '*',
+                        'page',
+                        $request->page ?? 1
+                    )
+            ))->additional([
+                'message' => 'Successfully fetched users'
+            ])
+        );
     }
 
     /**

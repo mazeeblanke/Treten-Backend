@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\CourseBatch;
 use App\CourseBatchAuthor;
+use App\Filters\CourseBatchCollectionFilters;
 use App\Http\Requests\CreateCourseBatchRequest;
+use App\Http\Requests\ListCourseBatchRequest;
 use App\Http\Requests\UpdateCourseBatchRequest;
 use App\Http\Resources\CourseBatch as CourseBatchResource;
 use App\Http\Resources\CourseBatchCollection;
@@ -17,54 +19,60 @@ class CourseBatchController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(ListCourseBatchRequest $request, CourseBatchCollectionFilters $filters)
     {
-        $this->validate($request, [
-            'courseId' => 'required',
-        ]);
-        $authorId = (int) $request->authorId;
-        $courseId = (int) $request->courseId;
-        $q = $request->q ?? '';
-        $builder = CourseBatch::where('course_batches.course_id', $courseId)
-            ->where(function ($query) use ($q) {
-                if ($q) {
-                    return $query->where('batch_name', 'like', '%' . $q . '%');
-                }
-                return $query;
-            });
+        // $authorId = (int) $request->authorId;
+        // $courseId = (int) $request->courseId;
+        // $q = $request->q ?? '';
+        // $builder = CourseBatch::where('course_batches.course_id', $courseId)
+        //     ->where(function ($query) use ($q) {
+        //         if ($q) {
+        //             return $query->where('batch_name', 'like', '%' . $q . '%');
+        //         }
+        //         return $query;
+        //     });
 
-        if ($authorId) {
-            $assignedBatchIds = CourseBatchAuthor::whereCourseId($courseId)
-            ->whereAuthorId($authorId)
-            ->get()
-            ->map(function ($batch) {
-                return $batch->course_batch_id;
-            })
-            ->filter(function ($courseBatchId) {
-                return $courseBatchId;
-            })
-            ->toArray();
-            // dd($assignedBatchIds);
-            $builder = $builder
-                ->join('course_batch_author', 'course_batches.id', '=', 'course_batch_author.course_batch_id')
-                ->where(function ($q) use ($courseId, $authorId, $assignedBatchIds) {
-                    if (count($assignedBatchIds) > 0 ) {
-                        // $q = $q->where('course_batch_instructor.course_batch_id', '!=', $courseBatchInstructor->course_batch_id);
-                        $q = $q->whereNotIn('course_batch_author.course_batch_id', $assignedBatchIds);
-                    }
-                    return $q
-                        ->where('course_batch_author.course_id', $courseId)
-                        ->where('course_batch_author.author_id', '!=', $authorId);
-                })
-                ->groupBy('course_batch_author.course_batch_id', 'course_batches.batch_name', 'course_batches.id')
-                ->select('course_batch_author.course_batch_id', 'course_batches.batch_name', 'course_batches.id');
-        }
+        // if ($authorId) {
+        //     $assignedBatchIds = CourseBatchAuthor::whereCourseId($courseId)
+        //     ->whereAuthorId($authorId)
+        //     ->get()
+        //     ->map(function ($batch) {
+        //         return $batch->course_batch_id;
+        //     })
+        //     ->filter(function ($courseBatchId) {
+        //         return $courseBatchId;
+        //     })
+        //     ->toArray();
 
-        // $courseBatches = $builder->get()->unique('instructor_id')->values();
-        $courseBatches = $builder->get();
-        // dd($courseBatches);
-        return response()->json(new CourseBatchCollection($courseBatches));
-        // return new CourseBatchCollection($courseBatches);
+        //     $builder = $builder
+        //         ->join('course_batch_author', 'course_batches.id', '=', 'course_batch_author.course_batch_id')
+        //         ->where(function ($q) use ($courseId, $authorId, $assignedBatchIds) {
+        //             if (count($assignedBatchIds) > 0 ) {
+        //                 // $q = $q->where('course_batch_instructor.course_batch_id', '!=', $courseBatchInstructor->course_batch_id);
+        //                 $q = $q->whereNotIn('course_batch_author.course_batch_id', $assignedBatchIds);
+        //             }
+        //             return $q
+        //                 ->where('course_batch_author.course_id', $courseId)
+        //                 ->where('course_batch_author.author_id', '!=', $authorId);
+        //         })
+        //         ->groupBy('course_batch_author.course_batch_id', 'course_batches.batch_name', 'course_batches.id')
+        //         ->select('course_batch_author.course_batch_id', 'course_batches.batch_name', 'course_batches.id');
+        // }
+
+        // // $courseBatches = $builder->get()->unique('instructor_id')->values();
+        // $courseBatches = $builder->get();
+        // // dd($courseBatches);
+        // return response()->json(new CourseBatchCollection($courseBatches));
+        // // return new CourseBatchCollection($courseBatches);
+
+        return response()->json(
+            new CourseBatchCollection(
+                CourseBatch::filterUsing($filters)
+                    ->get()
+                    ->unique('instructor_id')
+                    ->values()
+            )
+        );
     }
 
     /**
@@ -86,22 +94,29 @@ class CourseBatchController extends Controller
             'price' => $request->price,
         ];
         // first check if a space exists
-        
+
         $courseBatchAuthor = CourseBatchAuthor::whereAuthorId(auth()->user()->id)
             ->whereCourseId($request->courseId)
             ->whereCourseBatchId(null)->first();
-        
+
         if ($courseBatchAuthor) {
             $courseBatchAuthor->update($payload);
         } else {
             CourseBatchAuthor::create($payload);
         }
-        
+
 
         $courseBatch = CourseBatch::where('course_batches.id', $courseBatch->id)
-        ->join('course_batch_author', 'course_batch_author.course_batch_id', 'course_batches.id')
-        ->select('course_batches.*', 'course_batch_author.timetable')
-        ->first();
+            ->join(
+                'course_batch_author',
+                'course_batch_author.course_batch_id',
+                'course_batches.id'
+            )
+            ->select(
+                'course_batches.*',
+                'course_batch_author.timetable'
+            )
+            ->first();
 
         // dd($courseBatch->toArray());
 
@@ -137,7 +152,7 @@ class CourseBatchController extends Controller
 
         $courseBatchAuthor = CourseBatchAuthor::whereAuthorId($authorId)
             ->whereCourseBatchId($courseBatch->id)->first();
-        
+
         if ($courseBatchAuthor) {
             $courseBatchAuthor->update([
                 'timetable' => $request->timetable
@@ -145,11 +160,11 @@ class CourseBatchController extends Controller
         }
 
         $courseBatch = CourseBatch::where('course_batches.id', $courseBatch->id)
-        ->join('course_batch_author', 'course_batch_author.course_batch_id', 'course_batches.id')
-        ->where('course_batch_author.course_batch_id', $courseBatch->id)
-        ->where('course_batch_author.author_id', $authorId)
-        ->select('course_batches.*', 'course_batch_author.timetable')
-        ->first();
+            ->join('course_batch_author', 'course_batch_author.course_batch_id', 'course_batches.id')
+            ->where('course_batch_author.course_batch_id', $courseBatch->id)
+            ->where('course_batch_author.author_id', $authorId)
+            ->select('course_batches.*', 'course_batch_author.timetable')
+            ->first();
 
         return response()->json([
             'data' => new CourseBatchResource($courseBatch),

@@ -3,11 +3,16 @@
 namespace App;
 
 use App\Course;
+use App\Traits\Filterable;
 use App\CourseBatchInstructor;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CourseBatch extends Model
 {
+    use Filterable;
+    use SoftDeletes;
+
     protected $fillable = [
         'batch_name',
         'price',
@@ -32,7 +37,7 @@ class CourseBatch extends Model
         'courseId' => 'required',
         // 'timetable' => '',
     ];
-    
+
     public function getFriendlyStartDateAttribute()
     {
         return \Carbon\Carbon::parse($this->start_date)->format('D, d M Y');
@@ -62,7 +67,7 @@ class CourseBatch extends Model
         return $this->courses()->first();
     }
 
-    public function courses () 
+    public function courses ()
     {
         return $this->belongsToMany(Course::class, 'course_batch_author', 'course_batch_id', 'course_id')
         // ->withPivot('id');

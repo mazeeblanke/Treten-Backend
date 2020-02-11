@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\UserGroupCollectionFilters;
 use App\UserGroup;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserGroupCollection;
@@ -13,38 +14,25 @@ class UserGroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, UserGroupCollectionFilters $filters)
     {
-        $pageSize = $request->pageSize ?? 6;
-        $page = $request->page ?? 1;
-        $q = $request->q ?? '';
-        $builder = UserGroup::where(function ($builder) use ($q) {
-                if ($q) {
-                    return $builder
-                        ->where('group_name', 'like', '%' . $q . '%');
-                }
-                return $builder;
-            });
-
-        // if ($showActive) {
-        //     $builder = $builder->whereStatus('active');
-        // }
-
-        // if (\is_numeric($courseId))
-        // {
-        //     $builder = $builder->join('course_batch_author', 'course_batch_author.author_id', 'users.id')
-        //     ->where('course_batch_author.course_id', $courseId)
-        //     ->select(\DB::raw('count(course_batch_id) as total_batches, users.*'))
-        //     ->groupBy('users.id');
-        // }
-
-        $UserGroups = $builder
-            ->orderBy('user_groups.created_at', 'desc')
-            ->paginate($pageSize, '*', 'page', $page);
-
-        return response()->json((new UserGroupCollection($UserGroups))->additional([
-            'message' => 'Successfully fetched user la groups'
-        ]));
+        return response()->json(
+            (new UserGroupCollection(
+                UserGroup::filterUsing($filters)
+                    ->orderBy(
+                        'user_groups.created_at',
+                        $request->sort ?? 'desc'
+                    )
+                    ->paginate(
+                        $request->pageSize ?? 8,
+                        '*',
+                        'page',
+                        $request->page ?? 1
+                    )
+            ))->additional([
+                'message' => 'Successfully fetched user la groups'
+            ])
+        );
     }
 
     /**

@@ -3,10 +3,14 @@
 namespace App;
 
 use App\Tag;
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BlogPost extends Model
 {
+    use Filterable;
+    use SoftDeletes;
 
     protected $appends = [
         'blog_slug',

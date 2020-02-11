@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\TransactionCollectionFilters;
 use App\Transaction;
 use Illuminate\Http\Request;
 
@@ -12,24 +13,12 @@ class TransactionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, TransactionCollectionFilters $filters)
     {
         $pageSize = $request->pageSize ?? 6;
         $page = $request->page ?? 1;
-        $q = $request->q ?? '';
         $transactions = Transaction::with('user')
-            ->where(function ($builder) use ($q) {
-                if ($q) {
-                    return $builder
-                        ->orWhere('name', 'like', '%' . $q . '%')
-                        ->orWhere('email', 'like', '%' . $q . '%')
-                        ->orWhere('description', 'like', '%' . $q . '%')
-                        ->orWhere('amount', 'like', '%' . $q . '%')
-                        ->orWhere('transaction_id', 'like', '%' . $q . '%')
-                        ->orWhere('status', 'like', '%' . $q . '%');
-                }
-                return $builder;
-            })
+            ->filterUsing($filters)
             ->orderBy('created_at', 'desc')
             ->paginate($pageSize, '*', 'page', $page);
 

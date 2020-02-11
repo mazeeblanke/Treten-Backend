@@ -7,11 +7,13 @@ use App\Instructor;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class InstructorAuthenticationTest extends TestCase
 {
 
     use RefreshDatabase;
+    // use DatabaseTransactions;
 
     public function testAnInstructorCanSignUp()
     {
@@ -53,7 +55,7 @@ class InstructorAuthenticationTest extends TestCase
      */
     public function testAnInstructorCanLogin()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
 
         $instructor->details->status = 'active';
@@ -187,7 +189,7 @@ class InstructorAuthenticationTest extends TestCase
 
     public function testPendingInstructorCannotLogin ()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
         $instructor->details->status = 'pending';
         $instructor->details->save();
@@ -208,9 +210,9 @@ class InstructorAuthenticationTest extends TestCase
     }
 
 
-    public function testCannotRegisterUsingSameExistingEmail ()
+    public function testCannotRegisterUsingSameExistingEmail1 ()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
 
         $response = $this->json(
@@ -224,7 +226,11 @@ class InstructorAuthenticationTest extends TestCase
 
         $response->assertSee("The email has already been taken.");
 
-        Instructor::unsetEventDispatcher();
+    }
+
+    public function testCannotRegisterUsingSameExistingEmail2 ()
+    {
+        // Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
 
         $instructor->details->provider = 'facebook';
@@ -264,7 +270,7 @@ class InstructorAuthenticationTest extends TestCase
 
     public function testUserCanOnlyResetPasswordWhenItWasRegisteredManually ()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
 
        $instructor->details->provider = 'facebook';
@@ -307,7 +313,7 @@ class InstructorAuthenticationTest extends TestCase
     {
        \Mail::fake();
 
-       Instructor::unsetEventDispatcher();
+    //    Instructor::unsetEventDispatcher();
        $instructor = factory(Instructor::class)->create();
 
        $response = $this->json(

@@ -2,14 +2,17 @@
 
 namespace Tests\Feature;
 
+use Newsletter;
 use Faker\Factory;
 use Tests\TestCase;
-use Newsletter;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class NewsletterSubscriptionTest extends TestCase
 {
+    use RefreshDatabase;
+
     protected static $email;
     protected static $faker;
 

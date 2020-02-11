@@ -4,9 +4,11 @@ namespace App;
 
 use App\Mail\ContactUsMail;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ContactUs extends Model
 {
+    use SoftDeletes;
     protected $data = [];
 
     protected $fillable = [

@@ -4,9 +4,12 @@ namespace App;
 
 use App\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends Model
 {
+    use SoftDeletes;
+    
     protected $primaryKey = 'id'; // or null
 
     public $incrementing = true;

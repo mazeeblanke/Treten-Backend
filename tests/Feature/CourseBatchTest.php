@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Course;
 use App\CourseBatch;
+use App\CourseBatchAuthor;
 use App\Instructor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -18,7 +19,7 @@ class CourseBatchTest extends TestCase
      */
     public function testCanCreateCourseBatch()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $john = factory(Instructor::class)->create();
 
         $course = factory(Course::class)->create();
@@ -114,7 +115,7 @@ class CourseBatchTest extends TestCase
 
     public function testCreateCourseBatchValidation()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $john = factory(Instructor::class)->create();
 
         // $response = $this->json(
@@ -138,7 +139,6 @@ class CourseBatchTest extends TestCase
 
     public function testCanFetchCourseBatches()
     {
-        Instructor::unsetEventDispatcher();
         $john = factory(Instructor::class)->create();
 
         $course = factory(Course::class)->create();
@@ -154,16 +154,16 @@ class CourseBatchTest extends TestCase
 
         $response->assertJsonFragment([
             // 'data' => $courseBatches,
-            'message' => 'Successfully fetched course batch',
+            'message' => 'Successfully fetched course batches',
         ]);
 
         $response->assertStatus(200);
     }
 
-    
+
     public function testCanDeleteCourseBatch()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $john = factory(Instructor::class)->create();
 
         $course = factory(Course::class)->create();
@@ -190,13 +190,18 @@ class CourseBatchTest extends TestCase
 
     public function testCanUpdateCourseBatch()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $john = factory(Instructor::class)->create();
 
         $course = factory(Course::class)->create();
 
         $courseBatches = factory(CourseBatch::class, 10)->create([
             'course_id' => $course->id,
+        ]);
+
+        $courseBatchAuthor = factory(CourseBatchAuthor::class)->create([
+            'course_batch_id' => $courseBatches[0]->id,
+            'course_id' => $course->id
         ]);
 
         $response = $this->actingAs($john->details)->json(

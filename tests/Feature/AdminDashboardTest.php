@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Student;
 use App\Instructor;
 use Tests\TestCase;
+use App\CourseEnrollment;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -19,12 +20,19 @@ class AdminDashboardTest extends TestCase
     public function testCanFetchDashboardStats()
     {
         // TODO: update test to allow only admin fetch this data
-        Instructor::unsetEventDispatcher();
-        Student::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
+        // Student::unsetEventDispatcher();
 
         $john = factory(Instructor::class)->create();
         factory(Instructor::class, 11)->create();
         factory(Student::class, 3)->create();
+
+        // factory(CourseEnrollment::class)->create([
+        //     'active' => 1,
+        //     // 'user_id' => $this->students['mazino']->details->id,
+        //     // 'course_id' => $this->courses["course1"]->id,
+        //     // 'course_batch_id' => $this->batches['batchA']->id
+        // ]);
 
         $response = $this
         ->actingAs($john->details)
@@ -35,8 +43,8 @@ class AdminDashboardTest extends TestCase
 
         $response->assertJsonFragment([
             'message' => 'successfully fetched dashboard stats',
-            'students_count' => 3,
-            'instructors_count' => 12
+            'studentsCount' => 0,
+            'coursesCount' => 0
         ]);
 
         $response->assertStatus(200);

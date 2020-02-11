@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\TestimonialCollectionFilters;
 use App\Testimonial;
 use Illuminate\Http\Request;
 use App\Http\Resources\TestimonialCollection;
@@ -12,27 +13,21 @@ class TestimonialController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
+    */
+    public function index(Request $request, TestimonialCollectionFilters $filters)
     {
-        $pageSize = $request->pageSize ?? 8;
-        $page = $request->page ?? 1;
-        $q = $request->q ?? '';
-
-        $builder = Testimonial::where(function ($query) use ($q) {
-                if ($q) {
-                    return $query
-                        ->orWhere('name', 'like', '%' . $q . '%')
-                        ->orWhere('text', 'like', '%' . $q . '%');
-                }
-                return $query;
-            });
-
-        $testimonials = $builder
-            ->latest()
-            ->paginate($pageSize, '*', 'page', $page);
-
-        return response()->json(new TestimonialCollection($testimonials));
+        return response()->json(
+            new TestimonialCollection(
+                Testimonial::filterUsing($filters)
+                    ->latest()
+                    ->paginate(
+                        $request->pageSize ?? 8,
+                        '*',
+                        'page',
+                        $request->page ?? 1
+                    )
+            )
+        );
     }
 
     /**

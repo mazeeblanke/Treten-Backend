@@ -6,9 +6,12 @@ use Exception;
 use App\CourseBatchAuthor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'course_path_position',
         'certification_by',

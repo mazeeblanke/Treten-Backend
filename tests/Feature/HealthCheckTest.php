@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class HealthCheckTest extends TestCase
 {
+    use RefreshDatabase;
     /**
      * A basic test example.
      *
@@ -14,7 +16,7 @@ class HealthCheckTest extends TestCase
      */
     public function testEntryPoint()
     {
-        $response = $this->get('/');
+        $response = $this->get('/api');
 
         $response->assertStatus(200);
     }

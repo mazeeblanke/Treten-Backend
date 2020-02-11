@@ -21,18 +21,26 @@ class PaymentController extends Controller
     }
 
     public function handleGatewayCallback (Request $request) {
-        logger(request()->all());
-        // $paymentDetails = Paystack::getPaymentData();
-        $userId = $request['data']['metadata']['userId'] ?? null;
-        $courseId = $request['data']['metadata']['courseId'] ?? null;
-        $trnxId = $request['data']['reference'] ?? null;
-        $status = $request['data']['status'] ?? 'failed';
-        $courseBatchId = $request['data']['metadata']['courseBatchId'] ?? null;
+        // logger(request()->all());
+        $paymentDetails = Paystack::getPaymentData();
+        logger($paymentDetails);
+        $userId = $paymentDetails['data']['metadata']['userId'] ?? null;
+        $courseId = $paymentDetails['data']['metadata']['courseId'] ?? null;
+        $trnxId = $paymentDetails['data']['reference'] ?? null;
+        $status = $paymentDetails['data']['status'] ?? 'failed';
+        $courseBatchId = $paymentDetails['data']['metadata']['courseBatchId'] ?? null;
 
         $transaction = Transaction::where('transaction_id', $trnxId)->first();
 
-        $course = Course::find($courseId); 
+        $course = Course::find($courseId);
         $courseBatch = CourseBatch::find($courseBatchId);
+
+        if ($transaction->status === 'success')
+        {
+            return redirect()
+                ->to(config('app.frontend_url')."/courses/{$course->slug}/enroll");
+        }
+
         // logger($courseId);
         // logger($courseBatchId);
         // logger($courseBatch);
@@ -42,7 +50,7 @@ class PaymentController extends Controller
             ->whereCourseBatchId($courseBatchId)
             ->whereUserId($userId)
             ->first();
-            
+
         $transaction->update([
             'status' => $status,
         ]);
@@ -53,16 +61,26 @@ class PaymentController extends Controller
                 'active' => 1,
                 'expires_at' => null
             ]);
-            
+
             // update group
             $courseGroup = UserGroup::where('group_name', 'like', "%{$course->title}%")->first();
             $courseBatchGroup = UserGroup::where('group_name', 'like', "%{$course->title} ({$courseBatch->batch_name})%")->first();
             $user = User::find($userId);
 
             logger($courseGroup);
-        logger($courseBatchGroup);
+            logger($courseBatchGroup);
             $user->userGroups()->attach([$courseGroup->id, $courseBatchGroup->id]);
             // $user->userGroups()->attach($courseBatchGroup->id);
+
+            return redirect()
+                ->to(config('app.frontend_url')."/courses/{$course->slug}/enroll");
+        }
+
+        if ($status !== 'success')
+        {
+            response()->json([
+                'message' => 'Could not complete your payment'
+            ]);
         }
 
         // if ($course && session()->has('enrollments.'.$course->id))

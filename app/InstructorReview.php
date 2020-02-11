@@ -2,12 +2,14 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Http\Requests\CreateInstructorReviewRequest;
 use App\Http\Requests\UpdateInstructorReviewRequest;
-use Illuminate\Database\Eloquent\Model;
 
 class InstructorReview extends Model
 {
+    use SoftDeletes;
     /**
      * The allowed mass assignable fields
      *
@@ -90,7 +92,7 @@ class InstructorReview extends Model
         return $this->belongsTo(User::class);
     }
 
-    /** 
+    /**
      * Relationship with author
      *
      * @return void

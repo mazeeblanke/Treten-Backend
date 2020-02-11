@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CourseCategory;
+use App\Filters\CourseCategoryCollectionFilters;
 use App\Http\Resources\CourseCategoryCollection;
 use Illuminate\Http\Request;
 
@@ -13,33 +14,24 @@ class CourseCategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, CourseCategoryCollectionFilters $filters)
     {
-        $pageSize = $request->pageSize ?? 8;
-        $page = $request->page ?? 1;
-        $q = $request->q ?? '';
-        $courseId = (int) $request->courseId;
-        $minimal = isset($request->minimal) ? (int) $request->minimal : null;
-        $sort = in_array($request->sort, ['asc', 'desc'])
-        ? $request->sort
-        : 'desc';
+        // // if (!\is_null($minimal) && $minimal === 0) {
+        // //     $builder = $builder->select('courses.*');
+        // // }
 
-        $builder = CourseCategory::where(function ($query) use ($q) {
-            if ($q) {
-                return $query->where('name', 'like', '%' . $q . '%');
-            }
-            return $query;
-        });
-
-        // if (!\is_null($minimal) && $minimal === 0) {
-        //     $builder = $builder->select('courses.*');
-        // }
-
-        $courseCategories = $builder
-            ->orderBy('created_at', $sort)
-            ->paginate($pageSize, '*', 'page', $page);
-
-        return response()->json(new CourseCategoryCollection($courseCategories));
+        return response()->json(
+            new CourseCategoryCollection(
+                CourseCategory::filterUsing($filters)
+                    ->orderBy('created_at', $request->sort ?? 'desc')
+                    ->paginate(
+                        $request->pageSize ?? 8,
+                        '*',
+                        'page',
+                        $request->page ?? 1
+                    )
+            )
+        );
     }
 
     /**

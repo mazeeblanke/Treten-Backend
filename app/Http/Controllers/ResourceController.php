@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Filters\ResourceCollectionFilters;
+use App\Http\Requests\ListResourceRequest;
 use App\Http\Resources\Resource as ApiResource;
 use App\Http\Resources\ResourceCollection;
 use App\Resource;
@@ -14,87 +16,24 @@ class ResourceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(ListResourceRequest $request, ResourceCollectionFilters $filters)
     {
-        //validate/check permission to see anothe author stuff
-        $authorId = isset($request->authorId) ? (int) $request->authorId : null;
-        $userId = isset($request->userId) ? (int) $request->userId : null;
-        $categoryId = isset($request->categoryId) ? (int) $request->categoryId : null;
-        $pageSize = $request->pageSize ?? 8;
-        $page = $request->page ?? 1;
-        $withAuthor = (int) $request->withAuthor;
-        $q = $request->q ?? '';
-        $sort = in_array($request->sort, ['asc', 'desc'])
-            ? $request->sort
-            : 'desc';
-
-        $builder = Resource::where(function ($query) use ($q) {
-            if ($q) {
-                return $query
-                    ->orWhere('title', 'like', '%' . $q . '%')
-                    ->orWhere('summary', 'like', '%' . $q . '%');
-            }
-            return $query;
-        });
-
-        if (\is_null($withAuthor) && $withAuthor === 1)
-        {
-            $builder = $builder->with(['author']);
-        }
-
-        if ($categoryId)
-        {
-            $builder = $builder->whereHas('course.categories', function ($query) use ($categoryId) {
-                $query->where('course_categories.id', $categoryId);
-            });
-        }
-        
-        if (
-            auth()->check() && 
-            (auth()->user()->isAnAdmin() || auth()->user()->isAnInstructor())
-        )
-        {
-            $builder = $builder->whereAuthorId(auth()->user()->id);
-        }
-        // if ($authorId)
-        // {
-        //     $builder = $builder->whereAuthorId($authorId);
-        // }
-
-        if (
-            auth()->check() &&
-            auth()->user()->isAStudent()
-        )
-        {
-            $builder = $builder->whereHas('course', function ($query) {
-                return $query
-                ->join(
-                    'course_enrollments',
-                    'course_enrollments.course_id',
-                    'courses.id'
-                )
-                ->where('course_enrollments.user_id', auth()->user()->id);
-            });
-        }
-        // if ($userId)
-        // {
-        //     $builder = $builder->whereHas(['course' => function ($query) {
-        //         return $query->join(
-        //             'course_enrollments',
-        //             'course_enrollments.course_id',
-        //             'courses.id'
-        //         )
-        //         ->where('course_enrollments.user_id', auth()->user()->id);
-        //     }]);
-        // }
-       
-
-        $resources = $builder
-            ->orderBy('resources.created_at', $sort)
-            ->paginate($pageSize, '*', 'page', $page);
-            // dd($resources);
-
-        return response()->json((new ResourceCollection($resources)));
+        // //validate/check permission to see anothe author stuff
+        return response()->json(
+            new ResourceCollection(
+                Resource::filterUsing($filters)
+                    ->orderBy(
+                        'resources.created_at',
+                        $request->sort ?? 'desc'
+                    )
+                    ->paginate(
+                        $request->pageSize ?? 8,
+                        '*',
+                        'page',
+                        $request->page ?? 1
+                    )
+            )
+        );
     }
 
     /**

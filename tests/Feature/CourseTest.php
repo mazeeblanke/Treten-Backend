@@ -10,15 +10,17 @@ use App\Instructor;
 use Tests\TestCase;
 use App\CourseBatch;
 use App\CourseCategory;
-use App\CourseBatchAuthor;
 use App\CourseEnrollment;
+use App\CourseBatchAuthor;
 use Illuminate\Http\UploadedFile;
 use Spatie\Permission\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class CourseTest extends TestCase
 {
     use RefreshDatabase;
+    // use DatabaseTransactions;
 
     protected $admin;
     protected $courses = [];
@@ -31,6 +33,8 @@ class CourseTest extends TestCase
     protected function setUp (): void
     {
         parent::setUp();
+
+        // $this->artisan('migrate:fresh');
 
         $this->createCategories()
             ->createCoursePaths()
@@ -47,10 +51,19 @@ class CourseTest extends TestCase
     {
         parent::tearDown();
 
+        // $this->artisan('php artisan migrate:fresh');
+
         $this->courses = [];
+        // Course::delete();
         $this->batches = [];
+
+        // CourseBatch::delete();
         $this->students = [];
+
+        // User::delete();
         $this->categories = [];
+
+        // Cou
         $this->coursePaths = [];
         $this->instructors = [];
     }
@@ -117,7 +130,7 @@ class CourseTest extends TestCase
 
     public function testValidation(): void
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $john = factory(Instructor::class)->create();
 
         $response = $this->json(
@@ -169,6 +182,42 @@ class CourseTest extends TestCase
         $response->assertSee($this->courses["course1"]->title);
         $response->assertSee($this->courses["course2"]->title);
         $response->assertDontSee($this->courses["course3"]->title);
+        $response->assertDontSee($this->courses["course4"]->title);
+        $response->assertDontSee($this->courses["course5"]->title);
+
+        $response->assertJsonFragment(([
+            "perPage" => $pageSize,
+            "currentPage" => $page
+        ]));
+
+        $response->assertStatus(200);
+    }
+
+    public function testCanDeleteCourse (): void
+    {
+        $page = 1;
+        $pageSize = 2;
+
+        $response = $this->json(
+            'DELETE',
+            'api/courses/'.$this->courses["course2"]->id
+        );
+
+        $response->assertStatus(200);
+
+        $response = $this->json(
+            'GET',
+            'api/courses',
+            [
+                "page" => $page,
+                "pageSize" => $pageSize
+            ]
+        );
+
+        $this->assertCourseJsonStructure($response);
+        $response->assertSee($this->courses["course1"]->title);
+        $response->assertDontSee($this->courses["course2"]->title);
+        $response->assertSee($this->courses["course3"]->title);
         $response->assertDontSee($this->courses["course4"]->title);
         $response->assertDontSee($this->courses["course5"]->title);
 
@@ -382,7 +431,8 @@ class CourseTest extends TestCase
                 "categoryId" => $this->categories['associate']->id
             ]
         );
-
+        // logger(00000000000000);
+        // logger(json_encode($response, true));
         $this->assertCourseJsonStructure($response);
         $response->assertSee($this->courses["course1"]->title);
         $response->assertDontSee($this->courses["course2"]->title);
@@ -405,7 +455,8 @@ class CourseTest extends TestCase
                 "enrolled" => 1
             ]
         );
-
+        // logger(111111111111111);
+        // logger(json_encode($response, true));
         $this->assertCourseJsonStructure($response);
         $response->assertSee($this->courses["course1"]->title);
         $response->assertSee($this->courses["course2"]->title);
@@ -431,7 +482,8 @@ class CourseTest extends TestCase
                     "enrolled" => 0
                 ]
             );
-
+            // logger(2222222222222222);
+            // logger(json_encode($response, true));
         $this->assertCourseJsonStructure($response);
         $response->assertDontSee($this->courses["course1"]->title);
         $response->assertSee($this->courses["course2"]->title);
@@ -570,7 +622,7 @@ class CourseTest extends TestCase
                 'isPublished',
                 'description',
                 'publishedAt',
-                'instructors',
+                // 'instructors',
                 'transaction',
                 'courseReview',
                 'learnersCount',
@@ -708,7 +760,7 @@ class CourseTest extends TestCase
             'active' => 1,
             'user_id' => $this->students['mazino']->details->id,
             'course_id' => $this->courses["course1"]->id,
-            'course_batch_id' => $this->batches['batchA']->id
+            'course_batch_id' => $this->batches["batchA"]->id
         ]);
 
         return $this;
@@ -754,8 +806,10 @@ class CourseTest extends TestCase
                 ]);
             }
 
-            $this->batches["batch{$key}"] = factory(CourseBatchAuthor::class)
+           factory(CourseBatchAuthor::class)
                 ->create($data);
+            // $this->batches["batch{$key}"] = factory(CourseBatchAuthor::class)
+            //     ->create($data);
 
         }
 

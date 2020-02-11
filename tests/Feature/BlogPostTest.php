@@ -9,6 +9,7 @@ use Tests\TestCase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 class BlogPostTest extends TestCase
 {
@@ -22,7 +23,7 @@ class BlogPostTest extends TestCase
     {
         $tags = factory(Tag::class, 3)->create();
 
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
 
         $response = $this
@@ -61,10 +62,10 @@ class BlogPostTest extends TestCase
 
     public function testCannotCreateABlogIfNotLoggedIn()
     {
-        Instructor::unsetEventDispatcher();
+        // Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
 
-        $response = $this    
+        $response = $this
             ->json(
                 'POST',
                 '/api/blog-posts',
@@ -93,17 +94,16 @@ class BlogPostTest extends TestCase
     public function testCreateABlogValidationRules()
     {
 
-        Instructor::unsetEventDispatcher();
         $instructor = factory(Instructor::class)->create();
 
         $response = $this
-            ->actingAs($instructor->details)    
+            ->actingAs($instructor->details)
             ->json(
                 'POST',
                 '/api/blog-posts',
                 []
             );
-        
+
         $response->assertJsonFragment([
             'errors' => [
                 'body' => ['The body field is required.'],
@@ -111,8 +111,8 @@ class BlogPostTest extends TestCase
                 "blog_image" => ["The blog image field is required."],
                 "title" => ["The title field is required."]
             ]
-        ]);    
-        
+        ]);
+
         $response->assertStatus(422);
     }
 
@@ -127,14 +127,14 @@ class BlogPostTest extends TestCase
         $page = 2;
         $pageSize= 2;
 
-        $response = $this   
+        $response = $this
             ->json(
                 'GET',
                 "/api/blog-posts?page=$page&pageSize=$pageSize"
-            );   
-        
+            );
+
         $response->assertJsonFragment([
-            'current_page' => $page,
+            'currentPage' => $page,
         ]);
 
         $response->assertSee($fourthBlogPost->title);
@@ -178,14 +178,13 @@ class BlogPostTest extends TestCase
             'published_at' => \Carbon\Carbon::now()->addDays(10)
         ]);
 
-        $response = $this   
+        $response = $this
             ->json(
                 'GET',
                 "/api/latest-blog-posts"
-            );   
-        
+            );
 
-        $response->assertJsonCount(2, 'blogPosts');
+        $response->assertJsonCount(2, 'data');
         $response->assertSee($tenthBlogPost->title);
         $response->assertSee($ninethBlogPost->title);
         $response->assertDontSee($firstBlogPost->title);

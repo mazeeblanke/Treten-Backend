@@ -346,5 +346,15 @@ class CourseController extends Controller
     public function destroy(Course $course)
     {
         //
+        $deleted = $course->delete();
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Successfully deleted course'
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'An error occured'
+        ]);
     }
 }

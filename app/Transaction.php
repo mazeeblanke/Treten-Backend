@@ -3,10 +3,15 @@
 namespace App;
 
 use App\User;
+use App\Traits\Filterable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Transaction extends Model
 {
+    use Filterable;
+    use SoftDeletes;
+
     protected $fillable = [
         'invoice_id',
         'name',

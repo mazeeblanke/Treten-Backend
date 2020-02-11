@@ -4,9 +4,13 @@ namespace App;
 
 use App\Http\Resources\Enrollment;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CourseEnrollment extends Model
 {
+
+
+    use SoftDeletes;
 
   protected $fillable = [
     'user_id',
