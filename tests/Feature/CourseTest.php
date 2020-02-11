@@ -763,6 +763,13 @@ class CourseTest extends TestCase
             'course_batch_id' => $this->batches["batchA"]->id
         ]);
 
+        factory(CourseEnrollment::class)->create([
+            'active' => 0,
+            'user_id' => $this->students['mazino']->details->id,
+            'course_id' => $this->courses["course1"]->id,
+            'course_batch_id' => $this->batches["batchA"]->id
+        ]);
+
         return $this;
     }
 

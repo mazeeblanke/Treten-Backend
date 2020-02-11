@@ -86,25 +86,13 @@ class CourseCollectionFilters extends Filters {
 
 		if ((int) $this->request->enrolled === 1)
 	  {
-        //   dd($this
-        //   ->builder
-        //   ->whereHas('enrollments', function ($query) {
-        //       $query->whereUserId(auth()->user()->id)->whereActive(1);
-        //   })
-        //   ->where('course_enrollments.user_id', auth()->user()->id)
-        //   ->join(
-        //       'course_enrollments',
-        //       'course_enrollments.course_id',
-        //       'courses.id'
-        //   )->first()->toArray());
-        //   dd(CourseEnrollment::all()->toArray());
-        //   dd(CourseBatch::all()->toArray());
 			$this->builder = $this
 				->builder
 				->whereHas('enrollments', function ($query) {
 					$query->whereUserId(auth()->user()->id)->whereActive(1);
                 })
                 ->where('course_enrollments.user_id', auth()->user()->id)
+                ->where('course_enrollments.active', 1)
 				->join(
 					'course_enrollments',
 					'course_enrollments.course_id',
@@ -126,8 +114,6 @@ class CourseCollectionFilters extends Filters {
 					'course_batches.course_id',
 					'course_batches.class_is_full'
                 );
-
-                // dd($this->builder->get());
 		}
  }
 
