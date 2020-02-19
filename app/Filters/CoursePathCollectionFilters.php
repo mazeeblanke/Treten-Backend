@@ -16,15 +16,17 @@ class CoursePathCollectionFilters extends Filters {
  {
     $this->builder = $this
         ->builder
-        ->orWhere(
-            'name',
-            'like',
-            "%{$this->request->q}%"
-        )
-        ->orWhere(
-            'description',
-            'like',
-            "%{$this->request->q}%"
-        );
+        ->where(function ($q) {
+            $q->orWhere(
+                'name',
+                'like',
+                "%{$this->request->q}%"
+            )
+            ->orWhere(
+                'description',
+                'like',
+                "%{$this->request->q}%"
+            );
+        });
  }
 }
