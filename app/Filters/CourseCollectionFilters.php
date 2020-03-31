@@ -123,7 +123,7 @@ class CourseCollectionFilters extends Filters {
 	if ((int) $this->request->hasInstructor === 1) {
 		$this->builder = $this
 			->builder
-			->hasInstructors();
+            ->hasInstructors();
 		return;
 	}
 

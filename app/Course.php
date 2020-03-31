@@ -169,6 +169,7 @@ class Course extends Model
 
     public function scopeHasInstructors ($query)
     {
+        // done on purpose course only shows up when an insructor has created a timetable
         $query
             ->with(['instructors' => function($query) {
                     return $query->hasCourseTimetable();

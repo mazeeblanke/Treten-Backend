@@ -13,6 +13,7 @@ use App\Http\Requests;
 use App\CourseEnrollment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Mail\EnrollmentNotification;
 
 class PaymentController extends Controller
 {
@@ -23,7 +24,7 @@ class PaymentController extends Controller
     public function handleGatewayCallback (Request $request) {
         // logger(request()->all());
         $paymentDetails = Paystack::getPaymentData();
-        logger($paymentDetails);
+        // logger($paymentDetails);
         $userId = $paymentDetails['data']['metadata']['userId'] ?? null;
         $courseId = $paymentDetails['data']['metadata']['courseId'] ?? null;
         $trnxId = $paymentDetails['data']['reference'] ?? null;
@@ -67,10 +68,24 @@ class PaymentController extends Controller
             $courseBatchGroup = UserGroup::where('group_name', 'like', "%{$course->title} ({$courseBatch->batch_name})%")->first();
             $user = User::find($userId);
 
-            logger($courseGroup);
-            logger($courseBatchGroup);
+            // logger($courseGroup);
+            // logger($courseBatchGroup);
             $user->userGroups()->attach([$courseGroup->id, $courseBatchGroup->id]);
             // $user->userGroups()->attach($courseBatchGroup->id);
+
+            // Send mail to admins
+            $admins = User::scopes(['admin'])->get();
+            if (count($admins) >= 1)
+            {
+                foreach ($admins as $admin)
+                {
+                    \Mail::to($admin->email)
+                        ->send(new EnrollmentNotification([
+                            'enrollment' => $courseEnrollment->load(['user', 'course', 'batch'])->toArray()
+                        ]));
+                }
+            }
+
 
             return redirect()
                 ->to(config('app.frontend_url')."/courses/{$course->slug}/enroll");

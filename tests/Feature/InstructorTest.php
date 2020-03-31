@@ -46,7 +46,8 @@ class InstructorTest extends TestCase
         $response->assertSee($ola->first_name);
         // $response->assertSee('Successfully fetched instructors');
 
-        $response->assertStatus(200);
+        // $response->assertStatus(200);
+        $response->assertSuccessful();
     }
 
     public function testViewAnInstructor () {

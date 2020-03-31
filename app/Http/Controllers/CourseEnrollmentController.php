@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Http\Resources\TransactionResource;
 use App\Http\Requests\CreateCourseEnrollmentRequest;
 use App\Http\Resources\Course as AppCourse;
+use App\Mail\EnrollmentNotification;
+use App\User;
 
 class CourseEnrollmentController extends Controller
 {
@@ -49,7 +51,7 @@ class CourseEnrollmentController extends Controller
             ], 422);
         }
 
-        // then find all batches of the course matching the description, mode of delivery and start date,  
+        // then find all batches of the course matching the description, mode of delivery and start date,
         $courseBatch = CourseBatch::find($request->courseBatchId);
         $course = Course::find($request->courseId);
         if (!$courseBatch || !$course)
@@ -88,7 +90,7 @@ class CourseEnrollmentController extends Controller
             }
         }
 
-        
+
 
         // pick the first one thatis not full(count number of enrollment regardless of the status),
         if ($courseBatch->isFull())
@@ -108,7 +110,7 @@ class CourseEnrollmentController extends Controller
                 ->whereCourseId($request->courseId)
                 ->whereActive(0)
                 ->first();
-            if ($previousEnrollment) $previousEnrollment->delete(); 
+            if ($previousEnrollment) $previousEnrollment->delete();
 
             $enrollment = CourseEnrollment::create([
                 'active' => 0,
@@ -135,13 +137,13 @@ class CourseEnrollmentController extends Controller
                 'status' => 'pending'
             ]);
 
-            // then add the details to session including the ref and clear previous session matching this course 
+            // then add the details to session including the ref and clear previous session matching this course
             $transaction->price = $courseBatch->price;
             session()->put([
                 'enrollments.'.$course->id => $transaction
             ]);
         }
-       
+
 
         if (!auth()->check())
         {
@@ -175,9 +177,9 @@ class CourseEnrollmentController extends Controller
             ]);
         }
 
-        
 
-        
+
+
 
         // return deatils
         return response()->json([

@@ -293,6 +293,18 @@ class User extends Authenticatable
     }
 
     /**
+     *
+     * scope admin
+     *
+     */
+    public function scopeAdmin ($query)
+    {
+        return $query->whereHas('roles', function ($query) {
+            $query->whereName('admin');
+        });
+    }
+
+    /**
      * Check if a user is an admin
      *
      * @return boolean
