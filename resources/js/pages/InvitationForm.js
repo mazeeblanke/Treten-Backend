@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Tabs, Button, Input, Form } from 'antd';
-import notifier from 'simple-react-notifications';
+import notifier from 'simple-react-notifier';
 import withAuthLayout from '../layouts/withAuthLayout';
 import ReactDOM from 'react-dom';
 
@@ -99,8 +99,8 @@ class InvitationForm extends Component {
                       <Form.Item>
                         <label htmlFor="password-confirmation">Password Confirmation</label>
                         {getFieldDecorator('passwordConfirmation', {
-                          rules: [{ 
-                            required: true, 
+                          rules: [{
+                            required: true,
                             message: 'Please enter your new password confirmation! Passwords must be same',
                             min: 8,
                             validator: (rule, value, cb) =>
@@ -150,7 +150,7 @@ InvitationForm = withAuthLayout(WrappedInvitationFormForm);
 
 if (document.getElementById('invitation')) {
 	ReactDOM.render(
-		<InvitationForm />, 
+		<InvitationForm />,
 		document.getElementById('invitation')
 	);
 }

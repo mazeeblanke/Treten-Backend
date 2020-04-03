@@ -29,9 +29,9 @@ class CourseSeeder extends Seeder
             'description' => 'Almost every organisation in world today have a networking infrastructure and so naturally, every one of these also need networkers. With more & more businesses going online, e-commerce becoming the trend and digital awareness taking over, we need more and more workforce to control operations in the background. If you have already completed graduation and just waiting to be part of the I.T conglomerates, there are numerous profiles waiting for you depending on your experience level. Here are few job roles a CCNA helps you get.
 
             Network Administration: Your CCNA opens the door to this very desirous position in industry. However good things comes with time and experience & just your CCNA will not make you a network admin. With some years of experience in the networking industry most networkers end up in admin role which is a high paying job. System Administration & system support. CCNA also help you with system administrator profile. If you checkout job portals for system admin roles you can see most if them mention CCNA as a requisite.
-            
+
             Server Administration & Server Support: For those who want to be able to work on server side
-            
+
             Freelance Job Roles: If you have more creative ambitions, you can also start your own Youtube channel and earn money by posting networking videos online. A website or blog dedicated to networking can also be fascinating to some with flair for writing. As you gain enough experience and financial resources, you can give shape to more ambitious entrepreneurial dreams like your own network training school..',
             'price' => 50000,
             'is_published' => 1,
@@ -48,9 +48,9 @@ class CourseSeeder extends Seeder
             'description' => 'Almost every organisation in world today have a networking infrastructure and so naturally, every one of these also need networkers. With more & more businesses going online, e-commerce becoming the trend and digital awareness taking over, we need more and more workforce to control operations in the background. If you have already completed graduation and just waiting to be part of the I.T conglomerates, there are numerous profiles waiting for you depending on your experience level. Here are few job roles a CCIE helps you get.
 
             Network Administration: Your CCIE opens the door to this very desirous position in industry. However good things comes with time and experience & just your CCIE will not make you a network admin. With some years of experience in the networking industry most networkers end up in admin role which is a high paying job. System Administration & system support. CCNA also help you with system administrator profile. If you checkout job portals for system admin roles you can see most if them mention CCIE as a requisite.
-            
+
             Server Administration & Server Support: For those who want to be able to work on server side
-            
+
             Freelance Job Roles: If you have more creative ambitions, you can also start your own Youtube channel and earn money by posting networking videos online. A website or blog dedicated to networking can also be fascinating to some with flair for writing. As you gain enough experience and financial resources, you can give shape to more ambitious entrepreneurial dreams like your own network training school..',
             'price' => 100000,
             'is_published' => 1,
@@ -147,7 +147,7 @@ class CourseSeeder extends Seeder
 
 
         $ccnpRS = factory(Course::class)->create([
-            'title' => 'CCNP R&S',
+            'title' => 'Cisco Devnet Professional Core(350-901)',
             'description' => '
                 <p>
                 Cisco Certified Network Professional (CCNP) Routing and Switching certification validates the ability to plan, implement, verify and troubleshoot local and wide-area enterprise networks and work collaboratively with specialists on advanced security, voice, wireless and video solutions. The CCNP Routing and Switching certification is appropriate for those with at least one year of networking experience who are ready to advance their skills and work independently on complex network solutions. Those who achieve CCNP Routing and Switching have demonstrated the skills required in enterprise roles such as network engineer, support engineer, systems engineer or network technician. The routing and switching protocol knowledge from this certification will provide a lasting foundation as these skills are equally relevant in the physical networks of today and the virtualized network functions of tomorrow
@@ -168,7 +168,7 @@ class CourseSeeder extends Seeder
 
 
         $ccnpSecurity = factory(Course::class)->create([
-            'title' => 'CCNP Security',
+            'title' => 'CCNP Enterprise Core(350-401)',
             'description' => '
                 <p>
                 Cisco Certified Network Professional (CCNP) Routing and Switching certification validates the ability to plan, implement, verify and troubleshoot local and wide-area enterprise networks and work collaboratively with specialists on advanced security, voice, wireless and video solutions. The CCNP Routing and Switching certification is appropriate for those with at least one year of networking experience who are ready to advance their skills and work independently on complex network solutions. Those who achieve CCNP Routing and Switching have demonstrated the skills required in enterprise roles such as network engineer, support engineer, systems engineer or network technician. The routing and switching protocol knowledge from this certification will provide a lasting foundation as these skills are equally relevant in the physical networks of today and the virtualized network functions of tomorrow
@@ -189,7 +189,7 @@ class CourseSeeder extends Seeder
 
 
         $ccnpServiceProvider = factory(Course::class)->create([
-            'title' => 'CCNP Service Provider',
+            'title' => 'Cisco Certified CyberOps Associate',
             'description' => '
                 <p>The CCNP Service Provider certification is for service provider network engineers, technicians, and support personnel who want to configure and implement robust baseline Cisco Service Provider IP next-generation networks.</p>
                 <p>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 // import PropTypes from 'prop-types';
 import { Tabs, Button, Input, Form } from 'antd';
-import notifier from 'simple-react-notifications'
+import notifier from 'simple-react-notifier'
 import withAuthLayout from '../layouts/withAuthLayout';
 import ReactDOM from 'react-dom';
 
@@ -55,7 +55,7 @@ class PasswordReset extends Component {
   }
 
   render() {
-    const { 
+    const {
       getFieldDecorator,
       getFieldError
     } = this.props.form;
@@ -75,9 +75,9 @@ class PasswordReset extends Component {
                         <label htmlFor="email">Email address</label>
                         {getFieldDecorator('email', {
                           rules: [
-                            { 
-                              required: true, 
-                              message: 'Please input your email!' 
+                            {
+                              required: true,
+                              message: 'Please input your email!'
                             },
                             {
                               type: 'email',
@@ -124,13 +124,13 @@ PasswordReset.propTypes = {
 
 };
 
-const WrappedPasswordResetForm = Form.create({ 
-  name: 'reset-password' 
+const WrappedPasswordResetForm = Form.create({
+  name: 'reset-password'
 })(PasswordReset);
 
 PasswordReset = withAuthLayout(WrappedPasswordResetForm);
 
 if (document.getElementById('auth')) {
-  ReactDOM.render(<PasswordReset />, 
+  ReactDOM.render(<PasswordReset />,
   document.getElementById('auth'));
 }

@@ -99,8 +99,8 @@ class CourseBatchAuthorController extends Controller
      */
     public function destroy(CourseBatchAuthor $courseBatchAuthor)
     {
-        // dd($courseBatch);
-        $courseBatchAuthor->delete();
+        // dd($courseBatchAuthor);
+        $courseBatchAuthor->forceDelete();
         return response()->json([
             'message' => 'Succesfully deleted schedule',
         ]);

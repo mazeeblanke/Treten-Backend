@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import AlternateNavbar from '../components/shared/AlternateNavbar';
-import 'simple-react-notifications/dist/index.css'
+import 'simple-react-notifier/dist/index.css'
 import 'react-phone-number-input/style.css'
 
 export default (Page) => {

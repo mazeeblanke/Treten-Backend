@@ -4,7 +4,7 @@ import { Tabs, Button, Input, Form } from 'antd';
 import withAuthLayout from '../layouts/withAuthLayout';
 import ReactDOM from 'react-dom';
 import queryString from 'query-string'
-import notifier from 'simple-react-notifications';
+import notifier from 'simple-react-notifier';
 
 const { TabPane } = Tabs;
 
@@ -26,11 +26,11 @@ class PasswordReset extends Component {
     this.props.form.validateFields((err, form) => {
       if (!err) {
         let qs = queryString.parseUrl(location.href);
-        axios.post('/t/api/password/reset', { 
-          ...form, 
-          password_confirmation: form.password, 
-          email: qs.query.email, 
-          token: location.href.substring(location.href.lastIndexOf('/') + 1, location.href.lastIndexOf('?')) 
+        axios.post('/t/api/password/reset', {
+          ...form,
+          password_confirmation: form.password,
+          email: qs.query.email,
+          token: location.href.substring(location.href.lastIndexOf('/') + 1, location.href.lastIndexOf('?'))
         }).then((res) => {
           this.setState({
             isCreatingNewPassword: false

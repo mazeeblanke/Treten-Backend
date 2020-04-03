@@ -37,7 +37,7 @@ class CourseBatchCollectionFilters extends Filters {
  protected function filterByAuthorId ()
  {
 
-    if (isset($this->request->authorId)) return;
+    if (!isset($this->request->authorId)) return;
 
     $assignedBatchIds = $this->processAssignedBatchIds();
 

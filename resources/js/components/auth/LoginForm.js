@@ -1,7 +1,7 @@
 import { Form, Input, Button } from 'antd';
 import React from 'react';
 import queryString from 'query-string';
-import notifier from 'simple-react-notifications';
+import notifier from 'simple-react-notifier';
 
 class LoginForm extends React.Component {
   constructor (props) {
@@ -53,7 +53,7 @@ class LoginForm extends React.Component {
           isLoading: false
         })
       }
-      
+
     });
 
   }

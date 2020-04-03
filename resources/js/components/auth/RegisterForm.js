@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import { Form, Input, Button } from 'antd';
 import PhoneInput from 'react-phone-number-input'
 import { isValidPhoneNumber } from '../../helpers'
-import notifier from 'simple-react-notifications';
+import notifier from 'simple-react-notifier';
 
 class RegisterForm extends React.Component {
 
@@ -59,12 +59,12 @@ class RegisterForm extends React.Component {
           isLoading: false
         })
       }
-      
+
     });
   }
 
   render() {
-    const { 
+    const {
       getFieldDecorator,
       setFieldsValue,
       getFieldValue

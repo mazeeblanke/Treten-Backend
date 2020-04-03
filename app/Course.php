@@ -64,42 +64,45 @@ class Course extends Model
         // isPublished must be 0 or 1
     ];
 
-    public function transactions () {
+    public function transactions()
+    {
         return $this->hasMany(Transaction::class, 'course_id');
     }
 
-    public function enrollments () {
+    public function enrollments()
+    {
         return $this->hasMany(CourseEnrollment::class, 'course_id');
     }
 
-    public function timetable () {
+    public function timetable()
+    {
         return $this->hasMany(CourseBatchAuthor::class, 'course_id');
     }
 
     public function getFaqsAttribute($value)
     {
         return unserialize($value)
-        ? unserialize($value)
-        : [];
+            ? unserialize($value)
+            : [];
     }
 
     public function getModulesAttribute($value)
     {
         return unserialize($value)
-        ? unserialize($value)
-        : [];
+            ? unserialize($value)
+            : [];
     }
 
     public function getCertificationByAttribute($value)
     {
-       $certBy = (array)json_decode(unserialize($value));
+        $certBy = (array) json_decode(unserialize($value));
 
         return isset($certBy['value']) && isset($certBy['label'])
-        ? json_decode(unserialize($value))
-        : [
-            'value' => '',
-            'label' => ''
-        ];
+            ? json_decode(unserialize($value))
+            : [
+                'value' => '',
+                'label' => ''
+            ];
     }
 
     public function getBannerImageAttribute($value)
@@ -141,10 +144,10 @@ class Course extends Model
     public function categories()
     {
         return $this
-        ->belongsToMany(
-            CourseCategory::class,
-            'course_categories_allocation'
-        );
+            ->belongsToMany(
+                CourseCategory::class,
+                'course_categories_allocation'
+            );
     }
 
     public function courseReviews()
@@ -162,24 +165,24 @@ class Course extends Model
         return $this->categories->first();
     }
 
-    public function scopeFilterUsing ($query, $filters)
+    public function scopeFilterUsing($query, $filters)
     {
         $filters->apply($query);
     }
 
-    public function scopeHasInstructors ($query)
+    public function scopeHasInstructors($query)
     {
         // done on purpose course only shows up when an insructor has created a timetable
         $query
-            ->with(['instructors' => function($query) {
-                    return $query->hasCourseTimetable();
+            ->with(['instructors' => function ($query) {
+                return $query->hasCourseTimetable();
             }])
             ->whereHas('instructors', function ($query) {
                 return $query->hasCourseTimetable();
             });
     }
 
-    public function scopeMainCategories ($query)
+    public function scopeMainCategories($query)
     {
         $query->with('categories')
             ->whereHas('categories', function ($query) {
@@ -192,21 +195,21 @@ class Course extends Model
             });
     }
 
-    public function scopeOrderByLatest ($query)
+    public function scopeOrderByLatest($query)
     {
         $query->orderBy('courses.created_at', request()->sort ?? 'desc');
     }
 
-    public function scopeUniqueCoursesWithBatches ($query)
+    public function scopeUniqueCoursesWithBatches($query)
     {
         $query->select(
             \DB::raw('max(course_batch_author.id) as cba_id'),
-                'courses.id',
-                'courses.title',
-                'courses.created_at',
-                'courses.banner_image',
-                'course_batch_author.course_id'
-            )
+            'courses.id',
+            'courses.title',
+            'courses.created_at',
+            'courses.banner_image',
+            'course_batch_author.course_id'
+        )
             ->join(
                 'course_batch_author',
                 'course_batch_author.course_id',
@@ -217,29 +220,29 @@ class Course extends Model
     public function instructors()
     {
         return $this
-        ->belongsToMany(
-            User::class,
-            'course_batch_author',
-            'course_id',
-            'author_id'
-        )
-        ->hasCourseTimetable();
+            ->belongsToMany(
+                User::class,
+                'course_batch_author',
+                'course_id',
+                'author_id'
+            )
+            ->hasCourseTimetable();
     }
 
     public function batches()
     {
         return $this
-        ->belongsToMany(
-            CourseBatch::class,
-            'course_batch_author',
-            'course_id',
-            'course_batch_id'
-        )
-        ->withPivot([
-            'id',
-            'author_id',
-            'timetable'
-        ]);
+            ->belongsToMany(
+                CourseBatch::class,
+                'course_batch_author',
+                'course_id',
+                'course_batch_id'
+            )
+            ->withPivot([
+                'id',
+                'author_id',
+                'timetable'
+            ]);
     }
 
     public function coursePath()
@@ -344,7 +347,7 @@ class Course extends Model
         return $this;
     }
 
-    private function calculateCoursePathPosition ($coursePath, $coursePathPosition)
+    private function calculateCoursePathPosition($coursePath, $coursePathPosition)
     {
         $suggestedPosition = $this->suggestPosition($coursePath);
 
@@ -399,7 +402,7 @@ class Course extends Model
 
         if (is_numeric($category)) {
             if (request()->id && optional($this->category())->exists) {
-                \DB::table('course_categories_allocation')->where('course_id', $this->id)->delete();
+                \DB::table('course_categories_allocation')->where('course_id', $this->id)->forceDelete();
             }
             $this->categories()->attach([$category]);
         }
@@ -428,17 +431,17 @@ class Course extends Model
         if ($instance->coursePathIsString($coursePath)) {
             if (!$coursePath = CoursePath::whereName($coursePath)->first()) {
                 $coursePath = CoursePath::create([
-                        'name' => $request->coursePath,
-                        'banner_image' => collect([
-                            'courses/course1.png',
-                            'courses/course2.png',
-                            'courses/course3.png',
-                            'courses/course4.png',
-                            'courses/course5.png',
-                        ])
-                            ->random(1)
-                            ->first()
-                    ])->id;
+                    'name' => $request->coursePath,
+                    'banner_image' => collect([
+                        'courses/course1.png',
+                        'courses/course2.png',
+                        'courses/course3.png',
+                        'courses/course4.png',
+                        'courses/course5.png',
+                    ])
+                        ->random(1)
+                        ->first()
+                ])->id;
                 $coursePathPosition = 1;
             } else {
                 //handle
@@ -502,8 +505,8 @@ class Course extends Model
         if ($instance->coursePathIsString($coursePath)) {
             if (!$coursePath = CoursePath::whereName($coursePath)->first()) {
                 $coursePath = CoursePath::create([
-                        'name' => $request->coursePath,
-                    ])->id;
+                    'name' => $request->coursePath,
+                ])->id;
                 $coursePathPosition = 1;
             } else {
                 //handle

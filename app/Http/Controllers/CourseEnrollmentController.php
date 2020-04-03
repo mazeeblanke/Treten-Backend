@@ -44,8 +44,7 @@ class CourseEnrollmentController extends Controller
     public function store(CreateCourseEnrollmentRequest $request)
     {
         // verify id student
-        if (auth()->check() && !auth()->user()->isAStudent())
-        {
+        if (auth()->check() && !auth()->user()->isAStudent()) {
             return response()->json([
                 'message' => 'Only students can enroll for courses at the moment'
             ], 422);
@@ -54,24 +53,21 @@ class CourseEnrollmentController extends Controller
         // then find all batches of the course matching the description, mode of delivery and start date,
         $courseBatch = CourseBatch::find($request->courseBatchId);
         $course = Course::find($request->courseId);
-        if (!$courseBatch || !$course)
-        {
+        if (!$courseBatch || !$course) {
             return response()->json([
                 'message' => 'Date not avaliable'
             ], 422);
         }
 
-         // if found already existing active enrollment, then return a response that user is already enrolled
+        // if found already existing active enrollment, then return a response that user is already enrolled
         // if has active enrollment bail out
-        if (auth()->check())
-        {
+        if (auth()->check()) {
             $previousActiveEnrollment = CourseEnrollment::whereUserId(auth()->user()->id)
                 ->whereCourseId($request->courseId)
                 ->whereActive(1)
                 ->first();
 
-            if ($previousActiveEnrollment)
-            {
+            if ($previousActiveEnrollment) {
                 $course = $course->load([
                     'transactions' => function ($query) {
                         return $query->whereUserId(auth()->user()->id)->first();
@@ -93,8 +89,7 @@ class CourseEnrollmentController extends Controller
 
 
         // pick the first one thatis not full(count number of enrollment regardless of the status),
-        if ($courseBatch->isFull())
-        {
+        if ($courseBatch->isFull()) {
             return response()->json([
                 'message' => 'Sorry the class for the selected batch/date is filled up!'
             ], 422);
@@ -102,15 +97,14 @@ class CourseEnrollmentController extends Controller
 
         // then create an entry in the enrollmnet table with an expiry datetime (if auth)
         //  set at 10 minutes form the current time and status as pending
-        if (auth()->check())
-        {
+        if (auth()->check()) {
             // check if the student has previously enrolled for another mode or date that is pending,
             // if so delete it
             $previousEnrollment = CourseEnrollment::whereUserId(auth()->user()->id)
                 ->whereCourseId($request->courseId)
                 ->whereActive(0)
                 ->first();
-            if ($previousEnrollment) $previousEnrollment->delete();
+            if ($previousEnrollment) $previousEnrollment->forceDelete();
 
             $enrollment = CourseEnrollment::create([
                 'active' => 0,
@@ -140,15 +134,14 @@ class CourseEnrollmentController extends Controller
             // then add the details to session including the ref and clear previous session matching this course
             $transaction->price = $courseBatch->price;
             session()->put([
-                'enrollments.'.$course->id => $transaction
+                'enrollments.' . $course->id => $transaction
             ]);
         }
 
 
-        if (!auth()->check())
-        {
+        if (!auth()->check()) {
             session()->put([
-                'enrollments.'.$course->id => [
+                'enrollments.' . $course->id => [
                     'course_id' => $course->id,
                     'plan' => $request->plan,
                     'availableDate' => $request->availableDate,

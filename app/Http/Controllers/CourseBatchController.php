@@ -181,7 +181,7 @@ class CourseBatchController extends Controller
     public function destroy(CourseBatch $courseBatch)
     {
         // dd($courseBatch);
-        $courseBatch->delete();
+        $courseBatch->forceDelete();
         return response()->json([
             'message' => 'Succesfully deleted',
         ]);

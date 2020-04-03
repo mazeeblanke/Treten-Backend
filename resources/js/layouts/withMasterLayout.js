@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Navbar from '../../components/shared/Navbar';
-import 'simple-react-notifications/dist/index.css'
+import 'simple-react-notifier/dist/index.css'
 
 export default (Page) => {
   return class extends Component {
