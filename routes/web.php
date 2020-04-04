@@ -54,12 +54,14 @@ Route::group(['prefix' => 'api'], function () {
 
     Route::get('instructors', 'InstructorController@index');
     Route::post('instructor/{instructor}', 'InstructorController@update');
+    Route::delete('instructor/{instructor}', 'InstructorController@destroy');
     Route::get('instructor/{instructor_slug}', 'InstructorController@show');
 
     Route::get('users', 'UserController@index');
     Route::get('students', 'StudentController@index');
     Route::get('admins', 'AdminController@index');
     Route::post('user', 'UserController@update')->middleware('auth');
+    Route::delete('users/{user}', 'UserController@destroy');
 
     Route::get('transactions', 'TransactionController@index');
 

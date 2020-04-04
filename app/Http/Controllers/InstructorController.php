@@ -137,7 +137,10 @@ class InstructorController extends Controller
      */
     public function destroy(Instructor $instructor)
     {
-        //
+        $instructor->forceDelete();
+        return response()->json([
+            'message' => 'Succesfully deleted',
+        ]);
     }
 
     public function becomeAnInstructor(Request $request) {
