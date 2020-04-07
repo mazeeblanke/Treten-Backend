@@ -14,7 +14,10 @@ class CreateBlogPostRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->check() && auth()->user()->isAnInstructor();
+        return auth()->check() && (
+            auth()->user()->isAnInstructor() ||
+            auth()->user()->isAnAdmin()
+        );
     }
 
     /**

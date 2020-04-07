@@ -31,16 +31,6 @@ class TestimonialController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -48,18 +38,19 @@ class TestimonialController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
+        $this->validate($request, [
+            'text' => 'required',
+            'role' => 'required',
+            'name' => 'required'
+        ]);
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Testimonial  $testimonial
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Testimonial $testimonial)
-    {
-        //
+        Testimonial::create($request->all() + [
+            'profile_pic' => '/static/images/student.png',
+        ]);
+
+        return [
+            'message' => 'Successfully created'
+        ];
     }
 
     /**
@@ -82,7 +73,48 @@ class TestimonialController extends Controller
      */
     public function update(Request $request, Testimonial $testimonial)
     {
-        //
+        $testimonial->update($request->all() + [
+            'profile_pic' => '/static/images/student.png',
+        ]);
+
+        return [
+            'message' => 'Successfully updated!',
+            'model' => $testimonial->fresh()
+        ];
+    }
+
+    /**
+     * get form fields
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\BlogPost  $blogPost
+     * @return \Illuminate\Http\Response
+     */
+    public function formFields(Request $request, Testimonial $testimonial)
+    {
+        return [
+            'matrix' => [
+                'name' => [
+                    'type' => 'text',
+                    'placeholder' => 'Enter name'
+                ],
+                'role' => [
+                    'type' => 'text',
+                    'placeholder' => 'Enter role'
+                ],
+                'text' => [
+                    'type' => 'textarea',
+                    'placeholder' => 'Enter testimonial'
+                ],
+            ],
+            'model' => isset($testimonial) ? $testimonial : null,
+            'endpoints' => [
+                'createUrl' => route('testimonials.store', [], false),
+                'updateUrl' => route('testimonials.update', [
+                    'testimonial' => $testimonial->id
+                ], false)
+            ]
+        ];
     }
 
     /**
@@ -93,6 +125,9 @@ class TestimonialController extends Controller
      */
     public function destroy(Testimonial $testimonial)
     {
-        //
+        $testimonial->forceDelete();
+        return response()->json([
+            'message' => 'Succesfully deleted',
+        ]);
     }
 }

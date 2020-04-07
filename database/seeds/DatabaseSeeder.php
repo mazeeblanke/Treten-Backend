@@ -15,6 +15,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             BlogPostSeeder::class,
 
+            TestimonialSeeder::class,
+            CertificationSeeder::class,
+
             TransactionSeeder::class,
             MessageSeeder::class,
 
@@ -29,7 +32,7 @@ class DatabaseSeeder extends Seeder
 
             UserGroupSeeder::class,
             UserGroupAllocationSeeder::class,
-            TestimonialSeeder::class
+
         ]);
     }
 }

@@ -46,7 +46,7 @@ class TestimonialSeeder extends Seeder
             'name' => 'Anoynmous',
             'text' => 'Treten Academy has shown me that ICT security is no longer a luxury, but a necessity',
         ]);
-        
+
         $anoynmousTestimonial = factory(Testimonial::class)->create([
             'name' => 'Anoynmous',
             'text' => 'Treten Academy has shown me that ICT security is no longer a luxury, but a necessity',

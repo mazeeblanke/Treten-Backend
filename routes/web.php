@@ -23,8 +23,11 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.update');
     Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 
-    Route::get('blog-posts', 'BlogPostController@index');
-    Route::post('blog-posts', 'BlogPostController@store');
+    Route::get('blog-posts', 'BlogPostController@index')->name('blog-post.index');
+    Route::post('blog-posts', 'BlogPostController@store')->name('blog-posts.store');
+    Route::get('blog-posts/form-fields/{blogPost?}', 'BlogPostController@formFields');
+    Route::post('blog-posts/{blogPost}', 'BlogPostController@update')->name('blog-posts.update');
+    Route::delete('blog-posts/{blogPost}', 'BlogPostController@destroy');
     Route::get('blog-post/{blogpost_slug}', 'BlogPostController@show');
     Route::get('latest-blog-posts', 'BlogPostController@latestBlogPosts');
     Route::get('instructor/{instructor_slug}', 'InstructorController@show');
@@ -69,8 +72,19 @@ Route::group(['prefix' => 'api'], function () {
     Route::apiResource('course-categories', 'CourseCategoryController');
     Route::apiResource('course-reviews', 'CourseReviewController');
     Route::apiResource('user-groups', 'UserGroupController');
+
+    Route::get('testimonials/form-fields/{testimonial?}', 'TestimonialController@formFields');
+    Route::post('testimonials/{testimonial}', 'TestimonialController@update');
     Route::apiResource('testimonials', 'TestimonialController');
+
+    Route::get('course-paths/form-fields/{coursePath?}', 'CoursePathController@formFields');
+    Route::post('course-paths/{coursePath}', 'CoursePathController@update');
     Route::apiResource('course-paths', 'CoursePathController');
+
+    Route::get('certifications/form-fields/{certification?}', 'CertificationController@formFields');
+    Route::post('certifications/{certification}', 'CertificationController@update');
+    Route::apiResource('certifications', 'CertificationController');
+
     Route::post('course-review-approval/{courseReview}', 'CourseReviewController@approve');
     Route::post('users-activation/{user}', 'UserController@handleActivation');
     Route::apiResource('instructor-reviews', 'InstructorReviewController');

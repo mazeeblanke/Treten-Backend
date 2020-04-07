@@ -19,6 +19,7 @@ class BlogPost extends Model
     ];
 
     protected $fillable = [
+        'published',
         'blog_image',
         'body',
         'title',
@@ -31,20 +32,20 @@ class BlogPost extends Model
     ];
 
     public static $rules = [
-        'blog_image' => 'required|file',
+        'blogImage' => 'required|file',
         'body' => 'required',
-        'title' => 'required',
-        'author_id' => 'required|numeric',
+        'title' => 'required'
+        // 'author_id' => 'required|numeric',
     ];
 
     public function getBlogImageAttribute($value)
     {
-        return \Storage::url($value);
+        return $value ? \Storage::url($value) : null;
     }
 
     public function getFriendlyPublishedAtAttribute()
     {
-        return $this->published_at->format('d M Y');
+        return $this->published_at ? $this->published_at->format('d M Y') : null;
     }
 
     public function getContentSummaryAttribute()

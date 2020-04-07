@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\BlogPost;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Filters\BlogPostCollectionFilters;
+use App\Http\Resources\BlogPostCollection;
 use App\Http\Requests\CreateBlogPostRequest;
 use App\Http\Resources\BlogPost as BlogPostResource;
-use App\Http\Resources\BlogPostCollection;
-use Illuminate\Http\Request;
+use DateTime;
 
 class BlogPostController extends Controller
 {
@@ -44,15 +46,6 @@ class BlogPostController extends Controller
         return response()->json(new BlogPostCollection($blogPosts));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -63,36 +56,38 @@ class BlogPostController extends Controller
     public function store(CreateBlogPostRequest $request)
     {
         // store image file
-        $request->blog_image->store('blog_images');
+        $path = $request->blogImage->store('blog_images');
 
         // create the post
         $blog = BlogPost::create([
-            'blog_image' => $request->blog_image,
+            'blog_image' => $path,
             'body' => $request->body,
             'title' => $request->title,
-            'author_id' => $request->author_id,
+            'author_id' => $request->user()->id,
+            'published' => (int) $request->published,
+            'published_at' => $request->published ? now() : null
         ]);
 
-        // filter and create separate arrays of tags and tag ids
-        $tagIds = array_filter($request->tags, function ($tag) {
-            return is_numeric($tag);
-        });
+        // // filter and create separate arrays of tags and tag ids
+        // $tagIds = array_filter($request->tags, function ($tag) {
+        //     return is_numeric($tag);
+        // });
 
-        $tags = array_filter($request->tags, function ($tag) {
-            return is_string($tag) && !is_numeric($tag);
-        });
+        // $tags = array_filter($request->tags, function ($tag) {
+        //     return is_string($tag) && !is_numeric($tag);
+        // });
 
-        $tags = array_map(function ($tag) {
-            return [
-                'name' => $tag,
-            ];
-        }, $tags);
+        // $tags = array_map(function ($tag) {
+        //     return [
+        //         'name' => $tag,
+        //     ];
+        // }, $tags);
 
-        // associate tag ids
-        $blog->tags()->attach($tagIds);
+        // // associate tag ids
+        // $blog->tags()->attach($tagIds);
 
-        // createMany tags on post
-        $blog->tags()->createMany($tags);
+        // // createMany tags on post
+        // $blog->tags()->createMany($tags);
 
         // return response
         return response()->json([
@@ -125,17 +120,6 @@ class BlogPostController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\BlogPost  $blogPost
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(BlogPost $blogPost)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -144,7 +128,68 @@ class BlogPostController extends Controller
      */
     public function update(Request $request, BlogPost $blogPost)
     {
-        //
+        $this->validate($request, [
+            'body' => 'required',
+            'title' => 'required',
+            'blogImage' => 'required'
+        ]);
+
+        if ($request->hasFile('blogImage')) {
+            // store image file
+            $path = $request->blogImage->store('blog_images');
+            Storage::delete($blogPost->blog_image);
+            $blogPost->blog_image = $path;
+        }
+
+        $blogPost->update([
+            'body' => $request->body,
+            'title' => $request->title,
+            'author_id' => $request->user()->id,
+            'published' => (int) $request->published,
+            'published_at' => $request->published ? now() : null
+        ]);
+
+        return [
+            'message' => 'Successfully updated!',
+            'model' => $blogPost->fresh()
+        ];
+    }
+
+    /**
+     * get form fields
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\BlogPost  $blogPost
+     * @return \Illuminate\Http\Response
+     */
+    public function formFields(Request $request, BlogPost $blogPost)
+    {
+        return [
+            'matrix' => [
+                'title' => [
+                    'type' => 'text',
+                    'limit' => 23
+                ],
+                'blogImage' => [
+                    'type' => 'image'
+                ],
+                'published' => [
+                    'type' => 'checkbox'
+                ],
+                'body' => [
+                    'type' => 'textarea'
+                ]
+            ],
+            'model' => isset($blogPost) ? $blogPost->toArray() + [
+                'blogImage' => $blogPost->blog_image
+            ] : null,
+            'endpoints' => [
+                'createUrl' => route('blog-posts.store', [], false),
+                'updateUrl' => route('blog-posts.update', [
+                    'blogPost' => $blogPost->id
+                ], false)
+            ]
+        ];
     }
 
     /**
@@ -155,6 +200,9 @@ class BlogPostController extends Controller
      */
     public function destroy(BlogPost $blogPost)
     {
-        //
+        $blogPost->forceDelete();
+        return response()->json([
+            'message' => 'Succesfully deleted',
+        ]);
     }
 }
