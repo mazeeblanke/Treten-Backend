@@ -144,6 +144,16 @@ class InstructorController extends Controller
     }
 
     public function becomeAnInstructor(Request $request) {
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'qualifications' => 'required',
+            'consideration' => 'required',
+            'email' => 'required',
+            'phone_number' => 'required',
+            'file' => 'required|file',
+        ]);
+
         \Mail::to(config('mail.to'))
             ->send(new BecomeAnInstructorMail($request->all()));
     }

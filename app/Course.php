@@ -394,6 +394,7 @@ class Course extends Model
             if (!is_null($savedCategory)) {
                 $category = $savedCategory->id;
             } elseif (is_null($savedCategory)) {
+                $this->clearCategories();
                 $this->categories()->create([
                     'name' => $category,
                 ]);
@@ -402,12 +403,17 @@ class Course extends Model
 
         if (is_numeric($category)) {
             if (request()->id && optional($this->category())->exists) {
-                \DB::table('course_categories_allocation')->where('course_id', $this->id)->forceDelete();
+                $this->clearCategories();
             }
             $this->categories()->attach([$category]);
         }
 
         return $this;
+    }
+
+    protected function clearCategories ()
+    {
+        \DB::table('course_categories_allocation')->where('course_id', $this->id)->delete();
     }
 
     public static function store($request)

@@ -64,6 +64,12 @@
   height: 45px;
 }
 
+.text-truncate {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .is-flex.is-vcentered, .is-vcentered {
   align-items: center  !important;
 }
