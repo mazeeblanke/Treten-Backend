@@ -8,7 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(Resource::class, function (Faker $faker) {
     return [
         'course_id' => $faker->randomElement([
-            1, 2, 4, 3, 6, 7, 3, 5, 12, 2, 20, 21, 15, 16, 10, 11, 13, 17, 19
+            1, 2, 4, 3, 6, 7, 3, 5, 9, 2, 10
         ]),
         'author_id' => $faker->randomElement([
             1, 2, 4, 3, 6, 7,3, 5
