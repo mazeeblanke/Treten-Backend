@@ -124,3 +124,5 @@ Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::get('/invitation/{token}', 'InviteUserController@show');
+
+Route::get('/sitemap.xml', 'SitemapController@index');

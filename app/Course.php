@@ -200,6 +200,11 @@ class Course extends Model
         $query->orderBy('courses.created_at', request()->sort ?? 'desc');
     }
 
+    public function scopePublished($query)
+    {
+        $query->where('courses.is_published', 1);
+    }
+
     public function scopeUniqueCoursesWithBatches($query)
     {
         $query->select(

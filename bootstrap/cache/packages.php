@@ -6,17 +6,6 @@
       0 => 'Barryvdh\\Cors\\ServiceProvider',
     ),
   ),
-  'barryvdh/laravel-debugbar' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Barryvdh\\Debugbar\\ServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Debugbar' => 'Barryvdh\\Debugbar\\Facade',
-    ),
-  ),
   'beyondcode/laravel-dump-server' => 
   array (
     'providers' => 
@@ -58,6 +47,13 @@
     'providers' => 
     array (
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
+    ),
+  ),
+  'laravelium/sitemap' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravelium\\Sitemap\\SitemapServiceProvider',
     ),
   ),
   'nesbot/carbon' => 

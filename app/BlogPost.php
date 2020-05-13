@@ -65,6 +65,11 @@ class BlogPost extends Model
         return \Str::slug("{$this->title} {$this->id}", '_');
     }
 
+    public function scopePublished($query)
+    {
+        $query->where('published', 1);
+    }
+
     public function author()
     {
         return $this->belongsTo(User::class);
