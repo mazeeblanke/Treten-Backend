@@ -338,17 +338,22 @@ class Course extends Model
     {
         if (request()->hasFile('bannerImage')) {
             $extension = request()->file('bannerImage')->extension();
-            Storage::delete($this->banner_image);
+            Storage::disk('public')->delete($this->original['banner_image']);
             $banner_image = request()
                 ->file('bannerImage')
                 ->storeAs(
                     'courses',
                     "{$this->id}.{$extension}"
                 );
-            $this->update([
-                'banner_image' => $banner_image
-            ]);
+        } else if ($this->banner_image) {
+            Storage::disk('public')->delete($this->original['banner_image']);
+            $banner_image = null;
         }
+        // dd($this->original['banner_image']);
+        // dd(Storage::delete($this->original['banner_image']));
+        $this->update([
+            'banner_image' => $banner_image
+        ]);
         return $this;
     }
 

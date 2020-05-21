@@ -99,4 +99,15 @@
       0 => 'Spatie\\Permission\\PermissionServiceProvider',
     ),
   ),
+  'unicodeveloper/laravel-paystack' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Unicodeveloper\\Paystack\\PaystackServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Paystack' => 'Unicodeveloper\\Paystack\\Facades\\Paystack',
+    ),
+  ),
 );
