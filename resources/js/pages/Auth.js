@@ -42,7 +42,7 @@ class Auth extends Component {
                           type="primary"
                           htmlType="submit"
                           className="linkedin-btn has-full-width">
-                          <img className="mr-2" src="/t/images/social/linkedin icon.png" />
+                          <img alt="linkedin social icon" className="mr-2" src="/t/images/social/linkedin icon.png" />
                           LinkedIn
                         </Button>
                       </div>
@@ -52,8 +52,8 @@ class Auth extends Component {
                           type="primary"
                           htmlType="submit"
                           className="facebook-btn has-full-width">
-                            <img className="mr-2" src="/t/images/social/facebook icon.png" />
-                          Facbook
+                            <img alt="facebook social icon" className="mr-2" src="/t/images/social/facebook icon.png" />
+                          Facebook
                         </Button>
                       </div>
                     </div>
@@ -82,7 +82,7 @@ class Auth extends Component {
                             type="primary"
                             htmlType="submit"
                             className="linkedin-btn mb-4 has-full-width">
-                            <img className="mr-2" src="/t/images/social/linkedin icon.png" />
+                            <img alt="linkedin social icon" className="mr-2" src="/t/images/social/linkedin icon.png" />
                             LinkedIn
                         </Button>
                       </div>
@@ -92,8 +92,8 @@ class Auth extends Component {
                             type="primary"
                             htmlType="submit"
                             className="facebook-btn  mb-4 has-full-width">
-                            <img className="mr-2" src="/t/images/social/facebook icon.png" />
-                            Facbook
+                            <img alt="facebook social icon" className="mr-2" src="/t/images/social/facebook icon.png" />
+                            Facebook
                         </Button>
                       </div>
 

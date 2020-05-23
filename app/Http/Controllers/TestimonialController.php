@@ -45,7 +45,7 @@ class TestimonialController extends Controller
         ]);
 
         Testimonial::create($request->all() + [
-            'profile_pic' => '/static/images/student.png',
+            'profile_pic' => 'images/student.png',
         ]);
 
         return [
@@ -74,7 +74,7 @@ class TestimonialController extends Controller
     public function update(Request $request, Testimonial $testimonial)
     {
         $testimonial->update($request->all() + [
-            'profile_pic' => '/static/images/student.png',
+            'profile_pic' => 'images/student.png',
         ]);
 
         return [

@@ -13,8 +13,8 @@ require('./bootstrap');
  */
 
 import 'antd/dist/antd.css';
-// import "../static/slick-carousel/slick/slick.css";
-// import "../static/slick-carousel/slick/slick-theme.css";
+// import "..slick-carousel/slick/slick.css";
+// import "..slick-carousel/slick/slick-theme.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../sass/app.scss';
 // import 'antd/dist/antd.css';

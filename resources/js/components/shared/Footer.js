@@ -23,19 +23,19 @@ class Footer extends Component {
 
               <div className="mt-2">
                 {/* <div className="col-md-1"> */}
-                  <img className="mr-2" src="/static/images/social/linkedin icon.png" />
+                  <img alt="linkedin social icon" className="mr-2" src="images/social/linkedin icon.png" />
                 {/* </div> */}
                 {/* <div className="col-md-1"> */}
-                  <img className="mr-2" src="/static/images/social/facebook icon.png" />
+                  <img alt="facebook social icon" className="mr-2" src="images/social/facebook icon.png" />
                 {/* </div> */}
                 {/* <div className="col-md-1"> */}
-                  <img className="mr-2" src="/static/images/social/twitter icon.png" />
+                  <img alt="twitter social icon" className="mr-2" src="images/social/twitter icon.png" />
                 {/* </div> */}
                 {/* <div className="col-md-1"> */}
-                  <img className="mr-2" src="/static/images/social/youtube icon.png" />
+                  <img alt="youtube social icon" className="mr-2" src="images/social/youtube icon.png" />
                 {/* </div> */}
                 {/* <div className="col-md-1"> */}
-                  <img className="mr-2" src="/static/images/social/instagram icon.png" />
+                  <img alt="instagram social icon" className="mr-2" src="images/social/instagram icon.png" />
                 {/* </div> */}
               </div>
 

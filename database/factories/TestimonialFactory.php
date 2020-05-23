@@ -8,7 +8,7 @@ use Faker\Generator as Faker;
 $factory->define(Testimonial::class, function (Faker $faker) {
     return [
         'text' => $faker->paragraph(2),
-        'profile_pic' => '/static/images/student.png',
+        'profile_pic' => 'images/student.png',
         'role' => 'student',
         'name' => $faker->name
     ];
