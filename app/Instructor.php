@@ -101,7 +101,7 @@ class Instructor extends Model
 
     public function getInstructorSlugAttribute()
     {
-        return \Str::slug("{$this->details->first_name} {$this->details->last_name} {$this->id}", '_');
+        return \Str::slug("{$this->details->first_name} {$this->details->last_name} {$this->details->id}", '-');
     }
 
     public function details()

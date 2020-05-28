@@ -30,6 +30,7 @@ class User extends JsonResource
             'totalBatches' => $this->when($this->total_batches >= 0, $this->total_batches),
             'userable' => new UserableResource($this->whenLoaded('userable')),
             // 'userable' => $this->userable,
+            'courses' => $this->courses,
             'details' => new UserableResource($this->whenLoaded('details')),
             'msuuid' => new UserableResource($this->whenLoaded('msuuid')),
             'mruuid' => new UserableResource($this->whenLoaded('mruuid')),

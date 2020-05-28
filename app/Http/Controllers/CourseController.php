@@ -108,7 +108,7 @@ class CourseController extends Controller
      */
     public function show(Request $request, $course)
     {
-        $courseSlugSegments = explode('_', $course);
+        $courseSlugSegments = explode('-', $course);
         $courseId = (int) $courseSlugSegments[count($courseSlugSegments) - 1];
         $enrolled = (int) $request->enrolled ?? 0;
         // array_pop($courseSlugSegments);

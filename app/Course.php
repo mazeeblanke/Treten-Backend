@@ -35,7 +35,8 @@ class Course extends Model
         'certification_by',
         'instructor',
         'category',
-        'slug'
+        'slug',
+        'excerpt'
     ];
 
     public static $rules = [
@@ -135,10 +136,15 @@ class Course extends Model
         return $this->instructors->first();
     }
 
+    public function getExcerptAttribute()
+    {
+        return substr(strip_tags($this->description), 0, 65).'...';
+    }
+
     public function getSlugAttribute()
     {
-        $slug = \Str::slug($this->title, '_');
-        return "{$slug}_{$this->id}";
+        $slug = \Str::slug($this->title, '-');
+        return "{$slug}-{$this->id}";
     }
 
     public function categories()

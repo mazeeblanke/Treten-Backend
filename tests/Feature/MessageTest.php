@@ -7,6 +7,7 @@ use App\Student;
 use App\Instructor;
 use Tests\TestCase;
 use App\Events\MessageReceived;
+use App\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
@@ -36,42 +37,42 @@ class MessageTest extends TestCase
         //     'receiver_id' => $john->details->id
         // ]);
         $message2 = factory(Message::class)->create([
-            'sender_id' => 21,
+            'sender_id' => User::find(1),
             'receiver_id' => $john->details->id,
             'message_type' => 'chat',
             'message' => 'first_chat, first one',
             'created_at' => \Carbon\Carbon::now()->addDays(1),
         ]);
         $message21 = factory(Message::class)->create([
-            'sender_id' => 21,
+            'sender_id' => User::find(11),
             'receiver_id' => $john->details->id,
             'message_type' => 'broadcast',
             'message' => 'broadcast1',
             'created_at' => \Carbon\Carbon::now()->addDays(5),
         ]);
         $message212 = factory(Message::class)->create([
-            'sender_id' => 212,
+            'sender_id' => User::find(11),
             'receiver_id' => $john->details->id,
             'message_type' => 'broadcast',
             'message' => 'broadcast2',
             'created_at' => \Carbon\Carbon::now()->addDays(10),
         ]);
         $message2134 = factory(Message::class)->create([
-            'sender_id' => 21,
+            'sender_id' => User::find(10),
             'receiver_id' => $john->details->id,
             'message_type' => 'broadcast',
             'message' => 'broadcast4',
             'created_at' => \Carbon\Carbon::now()->addDays(90),
         ]);
         $message213 = factory(Message::class)->create([
-            'sender_id' => 21,
+            'sender_id' => User::find(8),
             'receiver_id' => $john->details->id,
             'message_type' => 'broadcast',
             'message' => 'broadcast3',
             'created_at' => \Carbon\Carbon::now()->addDays(100),
         ]);
         $message3 = factory(Message::class)->create([
-            'sender_id' => 41,
+            'sender_id' => User::find(12),
             'receiver_id' => $john->details->id,
             'message_type' => 'chat',
             'message' => 'firstone',
@@ -79,7 +80,7 @@ class MessageTest extends TestCase
             'created_at' => \Carbon\Carbon::now()->subDays(2),
         ]);
         $message4 = factory(Message::class)->create([
-            'sender_id' => 41,
+            'sender_id' => User::find(12),
             'receiver_id' => $john->details->id,
             'message_type' => 'chat',
             'message' => 'secondone',

@@ -47,6 +47,7 @@ class Course extends JsonResource
             'transaction' => $this->transaction,
             'publishedAt' => $this->published_at,
             'bannerImage' => $this->banner_image,
+            'excerpt' => $this->excerpt,
             'id' => $this->when($this->id, $this->id),
             'relatedCourses' => $relatedCourses ?? [],
             'instructorReviews' => $instructorReviews,

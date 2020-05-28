@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Course;
 use App\User;
 use App\Instructor;
 use Illuminate\Http\Request;
@@ -80,19 +81,25 @@ class InstructorController extends Controller
      */
     public function show($instructor_slug)
     {
-        $instructorSlugSegments = explode('_', $instructor_slug);
+        $instructorSlugSegments = explode('-', $instructor_slug);
         $instructorId = $instructorSlugSegments[count($instructorSlugSegments) - 1];
 
-        //   $instructor = Instructor::find((int)$instructorId)->load('details');
-        $instructor = User::whereHasMorph('userable', Instructor::class, function ($query) use ($instructorId) {
-            return $query->whereId((int) $instructorId);
-        })->with('userable')->first();
+        $courses = Course::whereHas('instructors', function ($query) use ($instructorId) {
+            return $query->where('course_batch_author.author_id', (int) $instructorId);
+        })->get();
+        $user = User::findOrFail($instructorId);
+
+        $instructor = User::whereHasMorph('userable', Instructor::class, function ($query) use ($user) {
+            return $query->whereId((int) $user->userable->id);
+        })->with(['userable'])->first();
 
         if (!$instructor) {
             return response()->json([
                 'message' => 'Unable to find the requested instructor',
             ], 422);
         }
+
+        $instructor->courses = $courses;
 
         return response()->json((new UserResource($instructor))->additional([
             'message' => 'Successfully fetched instructor',
