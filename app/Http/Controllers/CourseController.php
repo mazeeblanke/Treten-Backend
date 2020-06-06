@@ -64,7 +64,7 @@ class CourseController extends Controller
                 ->hasInstructors()
                 ->get()
                 ->groupBy(function ($course) {
-                    return $course->categories()->first()->name;
+                    return Optional($course->categories()->first())->name;
                 })
                 ->map(function($courseGroup, $category) {
                     return [
@@ -77,6 +77,9 @@ class CourseController extends Controller
                             ];
                         })
                     ];
+                })
+                ->filter(function($group) {
+                    return $group['value'] && $group['label'];
                 })
                 ->values();
         });
