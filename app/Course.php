@@ -355,10 +355,8 @@ class Course extends Model
             Storage::disk('public')->delete($this->original['banner_image']);
             $banner_image = null;
         }
-        // dd($this->original['banner_image']);
-        // dd(Storage::delete($this->original['banner_image']));
         $this->update([
-            'banner_image' => $banner_image
+            'banner_image' => $banner_image ?? null
         ]);
         return $this;
     }
