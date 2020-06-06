@@ -190,15 +190,15 @@ class Course extends Model
 
     public function scopeMainCategories($query)
     {
-        $query->with('categories')
-            ->whereHas('categories', function ($query) {
-                return $query->where(function ($query) {
-                    return $query
-                        ->orWhere('name', 'associate')
-                        ->orWhere('name', 'expert')
-                        ->orWhere('name', 'professional');
-                });
-            });
+        $query->with('categories');
+            // ->whereHas('categories', function ($query) {
+            //     return $query->where(function ($query) {
+            //         return $query
+            //             ->orWhere('name', 'associate')
+            //             ->orWhere('name', 'expert')
+            //             ->orWhere('name', 'professional');
+            //     });
+            // });
     }
 
     public function scopeOrderByLatest($query)

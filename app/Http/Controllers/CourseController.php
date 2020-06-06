@@ -66,21 +66,24 @@ class CourseController extends Controller
                 ->groupBy(function ($course) {
                     return $course->categories()->first()->name;
                 })
-                ->map(function($courseGroup) {
-                    return $courseGroup
-                        ->map(function ($course) {
+                ->map(function($courseGroup, $category) {
+                    return [
+                        "value" => $category,
+                        "label" => $category,
+                        "children" => $courseGroup->map(function($course) {
                             return [
-                                'title' => $course->title,
-                                'slug' => $course->slug,
+                                "value" => aurl("/courses/{$course->slug}", config('app.frontend_url')),
+                                "label" => $course->title,
                             ];
                         })
-                        ->take(5);
-                });
+                    ];
+                })
+                ->values();
         });
 
         return response()->json([
             'message' => 'Successfully fetched course groups',
-            'data' => $courses->toArray()
+            'data' => $courses
         ]);
     }
 

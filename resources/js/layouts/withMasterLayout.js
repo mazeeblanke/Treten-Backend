@@ -5,14 +5,14 @@ import 'simple-react-notifier/dist/index.css'
 export default (Page) => {
   return class extends Component {
 
-    static async getInitialProps (ctx) {
-      let pageProps = {}
-      if (Page.getInitialProps) {
-        pageProps = await Page.getInitialProps(ctx);
-      }
+    // static async getInitialProps (ctx) {
+    //   let pageProps = {}
+    //   if (Page.getInitialProps) {
+    //     pageProps = await Page.getInitialProps(ctx);
+    //   }
 
-      return { ...pageProps };
-    }
+    //   return { ...pageProps };
+    // }
 
     render () {
       return (
