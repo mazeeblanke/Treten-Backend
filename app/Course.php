@@ -7,6 +7,7 @@ use App\CourseBatchAuthor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Course extends Model
 {
@@ -349,15 +350,18 @@ class Course extends Model
                 ->file('bannerImage')
                 ->storeAs(
                     'courses',
-                    "{$this->id}.{$extension}"
+                    Str::uuid().".{$extension}"
                 );
-        } else if ($this->banner_image) {
+            $this->update([
+                'banner_image' => $banner_image
+            ]);    
+        } else if (request()->deleteBannerImage) {
             Storage::disk('public')->delete($this->original['banner_image']);
-            $banner_image = null;
+            $this->update([
+                'banner_image' => null
+            ]);
         }
-        $this->update([
-            'banner_image' => $banner_image ?? null
-        ]);
+        
         return $this;
     }
 

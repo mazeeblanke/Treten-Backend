@@ -9,6 +9,7 @@ use App\Http\Resources\User as UserResource;
 use App\Http\Resources\UserCollection;
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -110,7 +111,7 @@ class UserController extends Controller
             $extension = $request->file('profilePic')->extension();
             $payload['profile_pic'] = $request
                 ->file('profilePic')
-                ->storeAs('avatars', "{$request->user()->id}.{$extension}");
+                ->storeAs('avatars', Str::uuid().".{$extension}");
         }
 
         $request->user()->fill($payload)->save();
