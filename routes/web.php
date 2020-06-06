@@ -85,6 +85,10 @@ Route::group(['prefix' => 'api'], function () {
     Route::post('certifications/{certification}', 'CertificationController@update');
     Route::apiResource('certifications', 'CertificationController');
 
+    Route::get('team/form-fields/{team?}', 'TeamController@formFields');
+    Route::post('team/{team}', 'TeamController@update');
+    Route::apiResource('team', 'TeamController');
+
     Route::post('course-review-approval/{courseReview}', 'CourseReviewController@approve');
     Route::post('users-activation/{user}', 'UserController@handleActivation');
     Route::apiResource('instructor-reviews', 'InstructorReviewController');
