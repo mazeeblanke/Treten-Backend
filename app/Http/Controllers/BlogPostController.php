@@ -140,12 +140,12 @@ class BlogPostController extends Controller
             Storage::delete($blogPost->blog_image);
             $blogPost->blog_image = $path;
         }
-dd($request->published);
+
         $blogPost->update([
             'body' => $request->body,
             'title' => $request->title,
             'author_id' => $request->user()->id,
-            'published' => $request->published,
+            'published' => $request->published === 'true' ? 1: 0,
             'published_at' => $request->published ? now() : null
         ]);
 
