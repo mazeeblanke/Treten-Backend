@@ -22,6 +22,7 @@ class BlogPost extends JsonResource
             'blogSlug' => $this->blog_slug,
             'body' => $this->body,
             'title' => $this->title,
+            'published' => $this->published,
             'publishedAt' => $this->published_at,
             'friendlyPublishedAt' => $this->friendly_published_at,
             'contentSummary' => $this->content_summary,
