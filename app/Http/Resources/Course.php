@@ -44,6 +44,7 @@ class Course extends JsonResource
             'videoId' => $this->video_id,
             'avgRating' => $this->avg_rating,
             'enrollment' => $this->enrollment,
+            'enrollUrl' => $this->enroll_url,
             'transaction' => $this->transaction,
             'publishedAt' => $this->published_at,
             'bannerImage' => $this->banner_image,
