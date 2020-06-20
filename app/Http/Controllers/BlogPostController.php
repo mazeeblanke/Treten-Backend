@@ -145,7 +145,7 @@ class BlogPostController extends Controller
             'body' => $request->body,
             'title' => $request->title,
             'author_id' => $request->user()->id,
-            'published' => (int) $request->published,
+            'published' => $request->published,
             'published_at' => $request->published ? now() : null
         ]);
 
