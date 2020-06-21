@@ -99,19 +99,21 @@ class Course extends Model
 
     public function getCertificationByAttribute($value)
     {
-        return [
+        $default = [
             'value' => '',
             'label' => ''
         ];
-        
-        $certBy = (array) json_decode(unserialize($value));
 
-        return isset($certBy['value']) && isset($certBy['label'])
-            ? json_decode(unserialize($value))
-            : [
-                'value' => '',
-                'label' => ''
-            ];
+        try {
+            $certBy = (array) json_decode(unserialize($value));
+
+            return isset($certBy['value']) && isset($certBy['label'])
+                ? json_decode(unserialize($value))
+                : $default;
+        } catch (Exception $e) {
+            return $default;
+        }
+        
     }
 
     public function getBannerImageAttribute($value)
