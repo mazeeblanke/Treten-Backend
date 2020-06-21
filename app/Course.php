@@ -99,6 +99,11 @@ class Course extends Model
 
     public function getCertificationByAttribute($value)
     {
+        return [
+            'value' => '',
+            'label' => ''
+        ];
+        
         $certBy = (array) json_decode(unserialize($value));
 
         return isset($certBy['value']) && isset($certBy['label'])
